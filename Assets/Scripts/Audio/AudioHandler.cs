@@ -25,13 +25,13 @@ namespace UnityEngine.AudioManager
         #endregion
 
         #region Private Variables
+        private List<string> validExtensions = new List<string> { "*.mp3", "*.wav" };
 
         // Main Audio Source attached to the component
-        private static AudioSource audioSource;
+        private AudioSource audioSource;
         // Master audio mixer
         [SerializeField]
         private AudioMixer masterMixer;
-        private static List<string> validExtensions = new List<string> { "*.mp3", "*.wav" };
 
         // Current audio attached to the audio source component
         private static AudioClip audioToPlay;
@@ -51,8 +51,6 @@ namespace UnityEngine.AudioManager
             if (!masterMixer)
             {
                 Debug.LogError("There is no AudioMixer attached to Master Mixer");
-                enabled = false;
-                return;
             }
         }
         private void Start()
@@ -63,7 +61,7 @@ namespace UnityEngine.AudioManager
 
         #region Properties
         // Getter for the audio source
-        public static AudioSource GetAudioSource
+        public AudioSource GetAudioSource
         {
             get
             {
@@ -104,26 +102,6 @@ namespace UnityEngine.AudioManager
 
         #region Private Methods
 
-        // Get names of audio files with specified extensions
-        // and save them to a list 
-        // private void LoadAudio(string path)
-        // {
-        //     try
-        //     {
-        //         foreach (string ext in validExtensions)
-        //         {
-        //             foreach (string file in System.IO.Directory.GetFiles(path, ext, System.IO.SearchOption.AllDirectories))
-        //             {
-        //                 string songDir = System.IO.Path.GetFileNameWithoutExtension(file);
-        //                 SongPlaylist.Add(songDir);
-        //             }
-        //         }
-        //     }catch
-        //     {
-        //         throw new System.IO.FileNotFoundException();
-        //     }
-        // }
-
         /// <summary>
         /// Stream audio file
         /// </summary>
@@ -132,6 +110,14 @@ namespace UnityEngine.AudioManager
         public void StreamAudio(MusicPlaylist playlist, int index)
         {
             StartCoroutine(LoadAudio(playlist.Playlist[index]));
+        }
+        /// <summary>
+        /// Stream audio file
+        /// </summary>
+        /// <param name="path"> Enter audio file path </param>
+        public void StreamAudio(string path)
+        {
+            StartCoroutine(LoadAudio("file://" + Application.streamingAssetsPath + "/" + path));
         }
         private IEnumerator LoadAudio(string audioFilePath)
         {
@@ -144,21 +130,14 @@ namespace UnityEngine.AudioManager
             audioToPlay = request.GetAudioClip(false, true, AudioType.WAV);
             Debug.Log(audioToPlay.name + " loaded");
             audioSource.clip = audioToPlay;
-            audioSource.Play();
-            
+
+            // Invoke selected method when the new song is selected
+            OnAudioSelected.Invoke();
         }
         private WWW GetAudioFromFile(string path)
         {
             WWW request = new WWW(path);
             return request;
-        }
-
-        // Load song by index in the playlist
-        public void LoadSong(int index)
-        {
-            // Invoke selected method when the new song is selected
-            OnAudioSelected.Invoke();
-            Debug.Log("Song Selected: " + AudioToPlay.name);
         }
         #endregion
 
