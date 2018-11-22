@@ -27,7 +27,7 @@ namespace UnityEngine.AudioManager
         #endregion
         #region Public Variables
 
-        public static PlaybackState musicPlaybackState;
+        public static PlaybackState musicPlaybackState = PlaybackState.Pause;
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace UnityEngine.AudioManager
                 while (volume > _audioVolume)
                 {
                     _audioVolume += 2 * Time.deltaTime;
-                    AudioHandler.GetAudioSource.volume = _audioVolume;
+                    audioHandler.GetAudioSource.volume = _audioVolume;
                     yield return null;
                 }
             }
@@ -66,12 +66,12 @@ namespace UnityEngine.AudioManager
                 while (volume < _audioVolume)
                 {
                     _audioVolume -= 2 * Time.deltaTime;
-                    AudioHandler.GetAudioSource.volume = _audioVolume;
+                    audioHandler.GetAudioSource.volume = _audioVolume;
                     yield return null;
                 }
                 if (volume == 0f)
                 {
-                    AudioHandler.GetAudioSource.Pause();
+                    audioHandler.GetAudioSource.Pause();
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace UnityEngine.AudioManager
         void Start()
         {
             audioHandler = GetComponent<AudioHandler>();
-            audioHandler.StreamAudio(musicList, 0);
+            SelectSong(0);
         }
 
         // Update is called once per frame
@@ -117,41 +117,22 @@ namespace UnityEngine.AudioManager
         public void SelectSong(int index)
         {
             musicPlaybackState = PlaybackState.Pause;
-            audioHandler.LoadSong(index);
-            PlayAudio(false);
-        }
-        public void SelectSong(int index, bool loop)
-        {
-            musicPlaybackState = PlaybackState.Pause;
-            audioHandler.LoadSong(index);
-            PlayAudio(loop);
+            audioHandler.StreamAudio(musicList, index);
         }
         // Set the Audio Volume to 0. if Audio volume is 0,
         // it pauses automatically
         public void PauseAudio()
         {
-            AudioVolume = 0f;
-            MusicPausedTime = Time.time;
+            musicPlaybackState = PlaybackState.Pause;
+            AudioVolume        = 0f;   // Song pauses itself if audio volume is 0
+            MusicPausedTime    = Time.time;
         }
         // Set the volume to 1 and start playing the music
-        public void PlayAudio(bool loop)
-        {
-            AudioVolume = 1f;
-            AudioHandler.GetAudioSource.loop = loop;
-            AudioHandler.GetAudioSource.Play();
-            musicPlaybackState = PlaybackState.Play;
-        }
         public void PlayAudio()
         {
-            AudioVolume = 1f;
-            AudioHandler.GetAudioSource.Play();
             musicPlaybackState = PlaybackState.Play;
-        }
-        public void StopAudio()
-        {
-            musicPlaybackState = PlaybackState.Pause;
-            AudioVolume = 0f;
-            AudioHandler.GetAudioSource.Stop();
+            AudioVolume        = 1f;
+            audioHandler.GetAudioSource.Play();
         }
         public void NextSong()
         {
@@ -211,12 +192,10 @@ namespace UnityEngine.AudioManager
                 if (musicPlaybackState == PlaybackState.Pause)
                 {
                     PlayAudio();
-                    musicPlaybackState = PlaybackState.Play;
                 }
                 else
                 {
                     PauseAudio();
-                    musicPlaybackState = PlaybackState.Pause;
                 }
             }
             // Home button to select the next song in the playlist
