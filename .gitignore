@@ -5,6 +5,7 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 Assets/InstalledPackages/*
+Music Feature Extraction/audio_files/*
 
 # Visual Studio cache directory
 .vs/
