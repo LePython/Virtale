@@ -23,7 +23,7 @@ wav_files = os.listdir(WAV_DIR)
 #             ['chroma_stft_' + str(i+1) + '_mean' for i in range(12)] + \
 #             ['chroma_stft_' + str(i+1) + '_std' for i in range(12)] 
 
-col_names = ['file_name', 'signal_mean', 'zcr_mean', 'rmse_mean', 'tempo', 'spectral_centroid_mean', 'spectral_contrast_mean', 'mfccs_mean']
+col_names = ['file_name', 'tempo', 'spectral_contrast_2_mean', 'mfccs_4_mean', 'mfccs_1_std']
             
             
 df = pd.DataFrame(columns=col_names)
@@ -34,26 +34,16 @@ for f in tqdm(wav_files):
         y, sr = librosa.load(WAV_DIR+f, sr = 22050)
         
         feature_list = [f]
-
-        feature_list.append(np.mean(abs(y)))
-
-        zcr = librosa.feature.zero_crossing_rate(y + 0.0001, frame_length=2048, hop_length=512)[0]
-        feature_list.append(np.mean(zcr))
-
-        rmse = librosa.feature.rmse(y + 0.0001)[0]
-        feature_list.append(np.mean(rmse))
         
         tempo = librosa.beat.tempo(y, sr=sr)
         feature_list.extend(tempo)
 
-        spectral_centroids = librosa.feature.spectral_centroid(y+0.01, sr=sr)[0]
-        feature_list.append(np.mean(spectral_centroids))
-
         spectral_contrast = librosa.feature.spectral_contrast(y, sr=sr, n_bands = 6, fmin = 200.0)
-        feature_list.append(np.mean(spectral_contrast))
+        feature_list.append(np.mean(spectral_contrast[2]))
 
         mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20)
-        feature_list.append(np.mean(mfccs))
+        feature_list.append(np.mean(mfccs[4]))
+        feature_list.append(np.std(mfccs[1]))
         
         feature_list[1:] = np.round(feature_list[1:], decimals=3)
         
