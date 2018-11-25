@@ -15,6 +15,7 @@ def download_wav(song_url, format):
             "key": "FFmpegExtractAudio",
             "preferredcodec": format
         }],
+        "ignoreerrors":True
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -30,9 +31,8 @@ while True:
         download_wav(url, aformat)
         break
     except Exception as e:
-        print (e)
         os.system("cls")
-        print("The url is invalid. Please enter a valind url!")
+        print("The url is invalid. Please enter a valind url!", e)
 
 
 
