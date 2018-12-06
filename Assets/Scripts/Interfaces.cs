@@ -9,3 +9,11 @@ public interface IMusicPlayer
     void LastSong();
     void SelectSong(int index);
 }
+
+namespace RunPythonScript
+{
+    public interface IMLSharpPython
+    {
+        string ExecutePythonScript(string filePythonScript, out string standardError);
+    }
+}
