@@ -13,7 +13,7 @@ namespace RunPythonScript
         //C:/Windows/py.exe
         private string filePythonExePath = "C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
 
-        public string ExecutePythonScript(string filePythonScript, out string standardError)
+        public void ExecutePythonScript(string filePythonScript, out string standardError, out string output)
         {
             standardError = string.Empty;
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -29,7 +29,7 @@ namespace RunPythonScript
                 {
                     standardError = process.StandardError.ReadToEnd();
                     string result = reader.ReadToEnd();
-                    return result;
+                    output = result;
                 }
             }
         }
