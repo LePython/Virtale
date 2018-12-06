@@ -16,6 +16,7 @@ public class CategorizeSong : MonoBehaviour
         string outputText = kmeansModel.ExecutePythonScript(Application.dataPath + "/MLData/CategorizeSong.py", out error);
 
         Debug.Log(outputText);
+        Debug.LogError(error);
     }
 
     // Update is called once per frame
