@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.65080994, g: 0.666729, b: 0.7075472, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.04
@@ -113,6 +113,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!82 &40613665 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1038988008324968417, guid: 8db9726844fa6124292930d8be90feb9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1038988009173937589}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &54777009
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -310,6 +316,37 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &423832558 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1038988007494328506, guid: 8db9726844fa6124292930d8be90feb9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1038988009173937589}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &423832560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423832558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdf21df1ca89a644cb8458ae370f6b81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 40613665}
+--- !u!114 &423832561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423832558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33386310c15a8424291e84c9df8033ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &425799610 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100010, guid: ce816f2e6abb0504092c23ed9b970dfd,
@@ -5861,7 +5898,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultSpectrumPrefab: {fileID: 5307555915873803173, guid: 607e0d0027cad6240afbdfd351ed39fe,
     type: 3}
-  distanceBetweenNodes: 0
+  distanceBetweenNodes: 2
+  nodesMovementStrength: 1
+  audioSpectrum: {fileID: 423832560}
 --- !u!114 &1585075747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5877,6 +5916,7 @@ MonoBehaviour:
   dustParticleSystem: {fileID: 702363998}
   dustParticleSpeed: 3
   particleSystemColor: {r: 1, g: 0, b: 0, a: 0}
+  audioSpectrum: {fileID: 423832560}
 --- !u!1 &1687549940
 GameObject:
   m_ObjectHideFlags: 0
@@ -6106,6 +6146,64 @@ Transform:
   m_Father: {fileID: 675743548}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1884729860 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4853156493957518589, guid: 320f3fbe79127c04f92b5fe6eaed43a7,
+    type: 3}
+  m_PrefabInstance: {fileID: 4853156494328439735}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1884729862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884729860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76854d6817200e341958f24b2f031e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distanceFog: 1
+  excludeFarPixels: 1
+  useRadialDistance: 1
+  heightFog: 1
+  height: 1
+  heightDensity: 2
+  startDistance: 100
+  maxDensity: 0.1
+  energyLoss: 0
+  fogTint: {r: 1, g: 1, b: 1, a: 1}
+  fogShader: {fileID: 4800000, guid: f796635016f0e5340b3c4cba03dbeb2f, type: 3}
+  setGlobalSettings: 0
+  fogColor: {r: 0, g: 0, b: 0, a: 0}
+  fogMode: 0
+  fogDensity: 0
+  fogStart: 100
+  fogEnd: 1000
+  fogRT: {fileID: 0}
+--- !u!114 &1884729863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884729860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1ce05720998171408336a720488618c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _threshold: 0
+  _softKnee: 0.5
+  _radius: 7
+  _blurWeight: 1
+  _intensity: 1
+  _highQuality: 1
+  _antiFlicker: 1
+  _fadeRamp: {fileID: 2800000, guid: de0b4f48d7500ea4991cf90492adcb8e, type: 3}
+  _blurTint: {r: 1, g: 1, b: 1, a: 1}
+  _shader: {fileID: 0}
 --- !u!1 &1976100489 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 134650, guid: ce816f2e6abb0504092c23ed9b970dfd,
@@ -6299,7 +6397,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: AudioManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1038988007494328484, guid: 8db9726844fa6124292930d8be90feb9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8db9726844fa6124292930d8be90feb9, type: 3}
 --- !u!1001 &4853156494328439735
 PrefabInstance:

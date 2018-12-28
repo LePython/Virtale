@@ -4789,13 +4789,15 @@ GameObject:
   - component: {fileID: 1527248934306072014}
   - component: {fileID: 1527248934305269230}
   - component: {fileID: 1527248934304302894}
-  - component: {fileID: 1527248934306471760}
   - component: {fileID: 1527248934306471761}
+  - component: {fileID: 1527248934306471760}
   - component: {fileID: 1527248934306471767}
+  - component: {fileID: 5889375608472425286}
   - component: {fileID: 1527248934306471763}
   - component: {fileID: 1527248934306471762}
+  - component: {fileID: 5086612816551776860}
   m_Layer: 0
-  m_Name: MusicBoxe
+  m_Name: MusicBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4810,7 +4812,7 @@ Transform:
   m_GameObject: {fileID: 1527248934306568686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 33.333336, y: 33.333336, z: 33.333336}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children:
   - {fileID: 1527248933051424372}
   - {fileID: 1527248934637996160}
@@ -4863,22 +4865,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!54 &1527248934306471760
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527248934306568686}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 94
-  m_CollisionDetection: 0
 --- !u!82 &1527248934306471761
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4975,6 +4961,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!54 &1527248934306471760
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527248934306568686}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 1
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 94
+  m_CollisionDetection: 2
 --- !u!65 &1527248934306471767
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4988,6 +4990,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.02, y: 0.02, z: 0.02}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5889375608472425286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527248934306568686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0b2c66ab3f39524ba54c579c1fb22fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _intObj: {fileID: 5086612816551776860}
 --- !u!95 &1527248934306471763
 Animator:
   serializedVersion: 3
@@ -5019,6 +5034,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91382b33213746649b6740a794988f8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5086612816551776860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527248934306568686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f10fa40360571247a7ca806d6859557, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  _ignoreHoverMode: 1
+  _isIgnoringAllHoverState: 0
+  _ignorePrimaryHover: 0
+  _ignoreContact: 0
+  _ignoreGrasping: 0
+  _contactForceMode: 0
+  _allowMultiGrasp: 0
+  _moveObjectWhenGrasped: 1
+  graspedMovementType: 0
+  _overrideInteractionLayer: 0
+  _interactionLayer:
+    layerIndex: 0
+  _overrideNoContactLayer: 0
+  _noContactLayer:
+    layerIndex: 0
+  _eventTable:
+    _entries: []
 --- !u!1 &1527248934637996161
 GameObject:
   m_ObjectHideFlags: 0
