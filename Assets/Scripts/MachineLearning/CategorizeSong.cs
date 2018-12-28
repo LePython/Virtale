@@ -15,10 +15,10 @@ public class CategorizeSong : MonoBehaviour
     public UnityEvent OnCategorizeFinished;
     private string dataPath;
     private string error;
-
     private string output = null;
 
     RunPythonScript.MLModelLoadingManager kmeansModel;
+    RunPythonScript.LoadIronPythonMLModel kmeansIPModel;
 
     // Start is called before the first frame update
     private void Awake() {
@@ -28,6 +28,7 @@ public class CategorizeSong : MonoBehaviour
     {
 
         kmeansModel = new RunPythonScript.MLModelLoadingManager();
+        kmeansIPModel = new RunPythonScript.LoadIronPythonMLModel();
 
     }
 
@@ -41,7 +42,7 @@ public class CategorizeSong : MonoBehaviour
             songRelativePath = "Adele - Hello.mp3";
 
             // Assigns the script to the delegate
-            categorizeDelegate = RunTheMLModel;
+            categorizeDelegate = RunIronPythonModel;
 
             // Starts a new Thread with a newly assigned delegate for categorizing
             workerThread = new Thread(new ThreadStart(categorizeDelegate));
@@ -89,6 +90,18 @@ public class CategorizeSong : MonoBehaviour
         if(SongRelativePath)
         {
             kmeansModel.ExecutePythonScript(dataPath + "/MLData/CategorizeSong.py", songRelativePath, out error, out output);
+        }
+        else
+        {
+            Debug.LogError("There is no audio path assigned to the Categorizer. Do it in script before the start of a new thread");
+        }
+    }
+
+    private void RunIronPythonModel()
+    {
+        if(SongRelativePath)
+        {
+            output = kmeansIPModel.PatchParameter("CategorizeSong.py", "Adele - Hello.mp3", 12569);
         }
         else
         {
