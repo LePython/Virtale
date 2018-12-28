@@ -55,7 +55,7 @@ namespace UnityEngine.AudioManager
         }
         private void Start()
         {
-            
+            //StreamAudio("Tutorial/Tony Anderson - Immanuel.wav");
         }
         #endregion
 
@@ -103,7 +103,7 @@ namespace UnityEngine.AudioManager
         #region Private Methods
 
         /// <summary>
-        /// Stream audio file
+        /// Stream audio file from a list
         /// </summary>
         /// <param name="playlist"> Playlist to stream from </param>
         /// <param name="index"> Audio file index in playlist to stream </param>
@@ -123,12 +123,13 @@ namespace UnityEngine.AudioManager
         {
             if(audioFilePath == null)
                 yield break;
-            WWW request = GetAudioFromFile(audioFilePath);
             
+            WWW request = GetAudioFromFile(audioFilePath);
+
             yield return request;
 
-            audioToPlay = request.GetAudioClip(false, true, AudioType.WAV);
-            Debug.Log(audioToPlay.name + " loaded");
+            audioToPlay = request.GetAudioClip(true, true, AudioType.WAV);
+
             audioSource.clip = audioToPlay;
 
             // Invoke selected method when the new song is selected

@@ -25,18 +25,17 @@ public class MusicBoxManager : MonoBehaviour {
         popSoundDelay = 1.0f - transform.GetComponent<AudioSource>().clip.length;
 
         musicBoxAnimator = GetComponent<Animator>();
+        Invoke("PlayPopSound", popSoundDelay);
 
-        StartCoroutine(PlayPopSound(popSoundDelay));
+        //StartCoroutine(PlayPopSound(popSoundDelay));
         
     }
     #endregion
 
     #region Private Methods
     
-    //Play pop sound with defined delay
-    IEnumerator PlayPopSound(float delay)
+    public void PlayPopSound()
     {
-        yield return new WaitForSeconds(delay);
         transform.GetComponent<AudioSource>().Play();
     }
     /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AudioManager;
+using TMPro;
 
 /// <summary>
 /// Transcript structure is going to be used to manage audio, displayed text and delay each time
@@ -10,9 +11,9 @@ using UnityEngine.AudioManager;
 [System.Serializable]
 public struct Transcript
 {
-    private string transcriptPath;
-    private string transcriptText;
-    private float delayBefore;
+    public string transcriptPath;
+    public string transcriptText;
+    public float delayBefore;
 
     public Transcript(string audioPath, string text, float delay)
     {
@@ -31,15 +32,16 @@ public struct Transcript
 public class SpeechSequence : MonoBehaviour
 {
 
-    // List of audio files for speech sequencing
-    [SerializeField]
-    private MusicPlaylist speechSequenceList;
-
     [SerializeField]
     private AudioHandler audioHandler;
 
     [SerializeField]
     private List<Transcript> transcriptList;
+
+    [SerializeField]
+    private TextMeshProUGUI transcriptText;
+
+    private static int transcriptListIndex = 0;
 
     private void Awake() {
         if(!audioHandler)
@@ -50,21 +52,47 @@ public class SpeechSequence : MonoBehaviour
                 enabled = false;
             return;
         }
-        if(!speechSequenceList)
-        {
-            speechSequenceList = gameObject.AddComponent<MusicPlaylist>();
-        }
     }
 
     // Start is called before the first frame update
     void Start()
     {
         transcriptList = new List<Transcript>();
+        transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen zu Virtale in VR"));
+        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen strecken Sie Ihre linke Hand aus", 1.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um das Menü zu öffnen, ", 1.0f));
+        audioHandler.StreamAudio(transcriptList[transcriptListIndex].transcriptPath);
+        transcriptText.text = transcriptList[transcriptListIndex].transcriptText;
+    }
+    /// <summary>
+    /// The next Transcript gets prepared for streaming by invoking a method from UnityEvents in Inspector
+    /// </summary>
+    public void PlayTranscriptList()
+    {
+        transcriptListIndex++;
+
+        if(transcriptListIndex <= transcriptList.Count-1)
+        {
+            Invoke("PrepareTranscript", transcriptList[transcriptListIndex].delayBefore + audioHandler.GetAudioSource.clip.length);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void PrepareTranscript()
     {
-        
+        audioHandler.StreamAudio(transcriptList[transcriptListIndex].transcriptPath);
+        transcriptText.text = transcriptList[transcriptListIndex].transcriptText;
+        //StartCoroutine(TextOpacityTransition(transcriptText, true));
+    }
+
+    private IEnumerator TextOpacityTransition(TextMeshProUGUI text, bool appear)
+    {
+        bool textAppear = appear;
+        float a = text.color.a;
+        while(a > 0)
+        {
+            a -= 0.01f;
+            text.color = new Color(255,255,255,a);
+            yield return null;
+        }
     }
 }

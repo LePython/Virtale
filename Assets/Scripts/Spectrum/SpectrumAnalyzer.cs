@@ -5,8 +5,15 @@ using UnityEngine;
 
 namespace UnityEngine.AudioAnalyzer
 {
-    public class AudioSpectrumAnalyzer : MonoBehaviour
+    public class SpectrumAnalyzer : MonoBehaviour
     {
+
+        public enum AudioDataReturnType
+        {
+            LowRange,
+            HighRange,
+            DefaultBands,
+        }
 
         #region Private Variables
 
@@ -16,12 +23,49 @@ namespace UnityEngine.AudioAnalyzer
         // Divided data into frequency bands
         private static int spectrumNodeSize = 8;
 
+        private float[] audioSpectrumRawData = new float[sampleSize];
+
+        [SerializeField]
+        private AudioSource audioSource;
+
+        private void Awake() {
+            audioSource = GetComponent<AudioSource>();
+            if(!audioSource)
+            {
+                Debug.LogError("There is no Audio Source attached to the script.");
+                enabled = false;
+            }
+        }
+
+        private void Update() {
+            audioSource.GetSpectrumData(audioSpectrumRawData, 0, FFTWindow.BlackmanHarris);
+        }
+
+        /// <summary>
+        /// Get spectrum data as a float array. Resource intensive. Use it only once in a frame and save it into an array for further use
+        /// </summary>
+        /// <param name="filter"> How to filter the spectrum data </param>
+        /// <returns></returns>
+        public float[] GetSpectrum(AudioDataReturnType filter)
+        {
+            switch (filter)
+            {
+                case AudioDataReturnType.LowRange:
+                    return GetLowFrequencyRangeSpectrum();
+                case AudioDataReturnType.HighRange:
+                    return GetHighFrequencyRangeSpectrum();
+                case AudioDataReturnType.DefaultBands:
+                    return DivideIntoFrequencyBands();
+                default:
+                    return AudioSpectrumRawData;
+            }
+        }
 
         /// <summary>
         /// Assigns low range values to a new array, ignoring pass band and high range
         /// </summary>
         /// <returns></returns>
-        public static float[] GetLowFrequencyRangeSpectrum(float[] audioData)
+        private float[] GetLowFrequencyRangeSpectrum()
         {
 
             int granularity = 22050 / sampleSize;
@@ -35,7 +79,7 @@ namespace UnityEngine.AudioAnalyzer
 
             for (int i = 0; i < samplesNeeded; i++)
             {
-                filteredSignal[i] = audioData[i];
+                filteredSignal[i] = audioSpectrumRawData[i];
             }
 
             return filteredSignal;
@@ -44,7 +88,7 @@ namespace UnityEngine.AudioAnalyzer
         /// Assigns high range values to a new array, ignoring low range and pass band
         /// </summary>
         /// <returns></returns>
-        public static float[] GetHighFrequencyRangeSpectrum(float[] audioData)
+        private float[] GetHighFrequencyRangeSpectrum()
         {
 
             int granularity = 22050 / sampleSize;
@@ -58,7 +102,7 @@ namespace UnityEngine.AudioAnalyzer
 
             for (int i = samplesNeeded; i < sampleSize; i++)
             {
-                filteredSignal[i - samplesNeeded] = audioData[i];
+                filteredSignal[i - samplesNeeded] = audioSpectrumRawData[i];
             }
             return filteredSignal;
         }
@@ -66,10 +110,10 @@ namespace UnityEngine.AudioAnalyzer
         /// Filters the signal with a Butterworth Filter
         /// </summary>
         /// <returns> Returns the filtered signal as a float array instead of double</returns>
-        public float[] GetFilteredSpectrumData(float[] audioData)
+        private float[] GetFilteredSpectrumData()
         {
             // Cast float array to double array
-            double[] spectrumDatad = Array.ConvertAll(audioData, item => (double)item);
+            double[] spectrumDatad = Array.ConvertAll(audioSpectrumRawData, item => (double)item);
             double[] spectrumDataOut = Butterworth(spectrumDatad, 0.10, 1);
             float[] spectrumDatafloat = Array.ConvertAll(spectrumDataOut, item => (float)item);
 
@@ -144,7 +188,7 @@ namespace UnityEngine.AudioAnalyzer
         /// </summary>
         /// <param name="data"> Data to process</param>
         /// <param name="divideTimes"> How many times to divide the data ( 8 minimum )</param>
-        public static float[] DivideIntoFrequencyBands(float[] data)
+        private float[] DivideIntoFrequencyBands(float[] data)
         {
 
             float[] endData = new float[SpectrumNodeSize];
@@ -161,6 +205,32 @@ namespace UnityEngine.AudioAnalyzer
                 for (int j = 0; j < band; j++)
                 {
                     averageOfFrequencyBand += data[currentSample] * (currentSample + 1);
+                    currentSample++;
+                }
+                averageOfFrequencyBand /= band;
+                endData[i] = averageOfFrequencyBand;
+            }
+
+            return endData;
+        }
+
+        private float[] DivideIntoFrequencyBands()
+        {
+
+            float[] endData = new float[SpectrumNodeSize];
+
+            int currentSample = 0;
+
+            for (int i = 0; i < SpectrumNodeSize; i++)
+            {
+
+                int band = CalculateBands(i);
+
+                float averageOfFrequencyBand = 0;
+
+                for (int j = 0; j < band; j++)
+                {
+                    averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
                     currentSample++;
                 }
                 averageOfFrequencyBand /= band;
@@ -190,7 +260,7 @@ namespace UnityEngine.AudioAnalyzer
         #region Properties
 
 
-        public static int SpectrumNodeSize
+        public int SpectrumNodeSize
         {
             get
             {
@@ -203,6 +273,13 @@ namespace UnityEngine.AudioAnalyzer
             }
         }
 
+        public float[] AudioSpectrumRawData
+        {
+            get
+            {
+                return audioSpectrumRawData;
+            }
+        }
         #endregion
     }
 }

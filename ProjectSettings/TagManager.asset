@@ -16,10 +16,10 @@ TagManager:
   - PostProcessing
   - MusicBox
   - NoAdditionalLights
-  - 
-  - 
-  - 
-  - 
+  - FogVolumeShadowCaster
+  - FogVolume
+  - FogVolumeSurrogate
+  - FogVolumeUniform
   - 
   - 
   - 
