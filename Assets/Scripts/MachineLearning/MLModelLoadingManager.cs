@@ -19,16 +19,18 @@ namespace RunPythonScript
         /// <param name="filePythonScript"></param>
         /// <param name="standardError"></param>
         /// <param name="output"></param>
-        public void ExecutePythonScript(string filePythonScript, out string standardError, out string output)
+        public string ExecutePythonScript(string filePythonScript, out string standardError, out string output)
         {
             standardError = string.Empty;
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = filePythonExePath;
-            startInfo.Arguments = string.Format("\"{0}\"", filePythonScript);
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = filePythonExePath,
+                Arguments = string.Format("{0}", filePythonScript),
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
             using (Process process = Process.Start(startInfo))
             {
                 using (StreamReader reader = process.StandardOutput)
@@ -36,6 +38,7 @@ namespace RunPythonScript
                     standardError = process.StandardError.ReadToEnd();
                     string result = reader.ReadToEnd();
                     output = result;
+                    return result;
                 }
             }
         }
@@ -50,13 +53,15 @@ namespace RunPythonScript
         public void ExecutePythonScript(string filePythonScript, string args, out string standardError, out string output)
         {
             standardError = string.Empty;
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = filePythonExePath;
-            startInfo.Arguments = string.Format("\"{0}\"", filePythonScript, args);
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = filePythonExePath,
+                Arguments = string.Format("{0} {1}", filePythonScript, args),
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
             using (Process process = Process.Start(startInfo))
             {
                 using (StreamReader reader = process.StandardOutput)

@@ -42,15 +42,19 @@ public class CategorizeSong : MonoBehaviour
             songRelativePath = "Adele - Hello.mp3";
 
             // Assigns the script to the delegate
-            categorizeDelegate = RunIronPythonModel;
+            //categorizeDelegate = RunTheMLModelTest;
 
             // Starts a new Thread with a newly assigned delegate for categorizing
-            workerThread = new Thread(new ThreadStart(categorizeDelegate));
-            workerThread.Start();
+            //workerThread = new Thread(new ThreadStart(() => RunTheMLModel()));
+            //workerThread.Start();
+            
+            output = kmeansModel.ExecutePythonScript(dataPath + "/MLData/test.py", out error, out output);
 
             // Waits for thread and analysis to end
-            StartCoroutine(WaitForCategorizationEnd());
+            //StartCoroutine(WaitForCategorizationEnd());
         }
+        
+        Debug.Log(output);
     }
 
     /// <summary>
@@ -89,7 +93,7 @@ public class CategorizeSong : MonoBehaviour
     {
         if(SongRelativePath)
         {
-            kmeansModel.ExecutePythonScript(dataPath + "/MLData/CategorizeSong.py", songRelativePath, out error, out output);
+            kmeansModel.ExecutePythonScript(dataPath + "/MLData/test.py", out error, out output);
         }
         else
         {
@@ -101,7 +105,7 @@ public class CategorizeSong : MonoBehaviour
     {
         if(SongRelativePath)
         {
-            output = kmeansIPModel.PatchParameter("CategorizeSong.py", "Adele - Hello.mp3", 12569);
+            output = kmeansIPModel.PatchParameter("CategorizeSong.py", "Adele - Hello.mp3");
         }
         else
         {
