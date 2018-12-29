@@ -14,6 +14,7 @@ namespace RunPythonScript
 {
     public interface IMLSharpPython
     {
-        void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
+        //void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
+        string ExecutePythonScript(string filePythonScript, out string standardError, out string output);
     }
 }
