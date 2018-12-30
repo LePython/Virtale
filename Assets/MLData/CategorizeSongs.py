@@ -6,7 +6,6 @@ import scipy
 import librosa
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-cwd = os.getcwd()
 
 audioRelativePath = input()
 audioFileDirectory = dir_path + "\\" + audioRelativePath
