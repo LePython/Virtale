@@ -11,7 +11,7 @@ namespace RunPythonScript
     {
         //C:/Users/me/AppData/Local/Programs/Python/Python36
         //C:/Windows/py.exe
-        private string filePythonExePath = "C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
+        private string filePythonExePath = @"C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
 
         /// <summary>
         /// Without arguments
@@ -19,44 +19,13 @@ namespace RunPythonScript
         /// <param name="filePythonScript"></param>
         /// <param name="standardError"></param>
         /// <param name="output"></param>
-        public string ExecutePythonScript(string filePythonScript, out string standardError, out string output)
+        public void ExecutePythonScript(string filePythonScript, out string standardError, out string output)
         {
             standardError = string.Empty;
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = filePythonExePath,
                 Arguments = string.Format("{0}", filePythonScript),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
-            using (Process process = Process.Start(startInfo))
-            {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    standardError = process.StandardError.ReadToEnd();
-                    string result = reader.ReadToEnd();
-                    output = result;
-                    return result;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Run the model with args
-        /// </summary>
-        /// <param name="filePythonScript"></param>
-        /// <param name="args"></param>
-        /// <param name="standardError"></param>
-        /// <param name="output"></param>
-        public void ExecutePythonScript(string filePythonScript, string args, out string standardError, out string output)
-        {
-            standardError = string.Empty;
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = filePythonExePath,
-                Arguments = string.Format("{0} {1}", filePythonScript, args),
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
