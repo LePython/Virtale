@@ -17,6 +17,7 @@ public class CategorizeSong : MonoBehaviour
     private string error;
     private string output = null;
 
+    bool isDoneAnalyzing = false;
     RunPythonScript.MLModelLoadingManager kmeansModel;
 
     // Start is called before the first frame update
@@ -45,10 +46,9 @@ public class CategorizeSong : MonoBehaviour
             workerThread.Start();
 
             // Waits for thread and analysis to end
-            //StartCoroutine(WaitForCategorizationEnd());
+            StartCoroutine(WaitForCategorizationEnd());
         }
-        Debug.Log(error);
-        Debug.Log(output);
+        //Debug.Log(output);
     }
 
     /// <summary>
@@ -58,16 +58,17 @@ public class CategorizeSong : MonoBehaviour
     /// <returns></returns>
     private IEnumerator WaitForCategorizationEnd()
     {
-        while(output == null)
+        while(kmeansModel.IsProcessingDone == false)
         {
 #if UNITY_EDITOR
             Debug.Log("Categorizing...");
 #endif
+
             yield return new WaitForSeconds(.1f);
         }
 
         //workerThread.Abort();
-        Debug.Log("Done.");
+        Debug.Log("Done processing.");
 
         OnCategorizeFinished.Invoke();
 
