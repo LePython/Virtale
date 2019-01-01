@@ -11,6 +11,8 @@ namespace RunPythonScript
     {
         //C:/Users/me/AppData/Local/Programs/Python/Python36
         //C:/Windows/py.exe
+
+        private bool isProcessingDone = false;
         private string filePythonExePath = @"C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
 
         /// <summary>
@@ -31,15 +33,27 @@ namespace RunPythonScript
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-            using (Process process = Process.Start(startInfo))
+            Process process = Process.Start(startInfo);
+            process.EnableRaisingEvents = true;
+            process.Exited += new EventHandler(process_Exited);
+
+            using (StreamReader reader = process.StandardOutput)
             {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    standardError = process.StandardError.ReadToEnd();
-                    string result = reader.ReadToEnd();
-                    output = result;
-                }
+                standardError = process.StandardError.ReadToEnd();
+                string result = reader.ReadToEnd();
+                output = result;
             }
+            process.WaitForExit();
+        }
+        void process_Exited(object sender, EventArgs e)
+        {
+            isProcessingDone = true;
+        }
+
+        public bool IsProcessingDone
+        {
+            get => isProcessingDone;
+            set => value = isProcessingDone;
         }
     }
 

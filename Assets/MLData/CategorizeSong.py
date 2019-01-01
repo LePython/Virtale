@@ -115,4 +115,3 @@ finalList = data + analyzedFeatureList
 # Open the json file and rewrite its content to update the list
 with open(dir_path + "\\AnalyzedFeaturesList.json", "w") as f:
     json.dump(finalList, f, indent=4)
-
