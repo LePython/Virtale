@@ -24,7 +24,7 @@ for i in songsList:
 analyzedDataListNames = []
 
 # Open json file to get already analyzed files
-with open("AnalyzedFeaturesList.json") as aFile:
+with open(dir_path + "\\AnalyzedFeaturesList.json") as aFile:
     loadedData = json.load(aFile)
     for p in loadedData:
         analyzedDataListNames.append(p["Name"])
@@ -38,10 +38,11 @@ def IsAnalysisRequired():
 # Check if there are files for analysis
 # if there are none, exit the script
 if IsAnalysisRequired() != True:
-    print("There is nothing to analyse!")
+    print("There is nothing to analyze!")
     exit()
 
 print("Analysis is required. Initiating analysis...")
+print("This might take a while. It depends on how many songs have to be analyzed. Be Patient.")
 # Create a list to store analyzed features afterwards
 analyzedFeatureList = []
 
@@ -104,11 +105,14 @@ for index, f in enumerate(tqdm(songsList)):
     }
     analyzedFeatureList.append(featureDic)
 
-with open("AnalyzedFeaturesList.json") as f:
+# Open the json file and copy its content
+with open(dir_path + "\\AnalyzedFeaturesList.json") as f:
     data = json.load(f)
 
+# Add new analyzed songs into the list of previously analyzed ones
 finalList = data + analyzedFeatureList
 
-with open("AnalyzedFeaturesList.json", "w") as f:
+# Open the json file and rewrite its content to update the list
+with open(dir_path + "\\AnalyzedFeaturesList.json", "w") as f:
     json.dump(finalList, f, indent=4)
 

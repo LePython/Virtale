@@ -18,7 +18,6 @@ public class CategorizeSong : MonoBehaviour
     private string output = null;
 
     RunPythonScript.MLModelLoadingManager kmeansModel;
-    RunPythonScript.LoadIronPythonMLModel kmeansIPModel;
 
     // Start is called before the first frame update
     private void Awake() {
@@ -28,7 +27,6 @@ public class CategorizeSong : MonoBehaviour
     {
 
         kmeansModel = new RunPythonScript.MLModelLoadingManager();
-        kmeansIPModel = new RunPythonScript.LoadIronPythonMLModel();
 
     }
 
@@ -37,23 +35,19 @@ public class CategorizeSong : MonoBehaviour
     {
         if(Input.GetKeyDown("l"))
         {
-            Debug.Log("Starting a new thread to Categorize song");
-
-            songRelativePath = "Adele - Hello.mp3";
+            Debug.Log("Starting a new thread to Categorize new songs");
 
             // Assigns the script to the delegate
-            //categorizeDelegate = RunTheMLModelTest;
+            categorizeDelegate = RunTheMLModel;
 
             // Starts a new Thread with a newly assigned delegate for categorizing
-            //workerThread = new Thread(new ThreadStart(() => RunTheMLModel()));
-            //workerThread.Start();
-            
-            output = kmeansModel.ExecutePythonScript(dataPath + "/MLData/test.py", out error, out output);
+            workerThread = new Thread(new ThreadStart(categorizeDelegate));
+            workerThread.Start();
 
             // Waits for thread and analysis to end
             //StartCoroutine(WaitForCategorizationEnd());
         }
-        
+        Debug.Log(error);
         Debug.Log(output);
     }
 
@@ -72,8 +66,8 @@ public class CategorizeSong : MonoBehaviour
             yield return new WaitForSeconds(.1f);
         }
 
-        workerThread.Abort();
-        Debug.Log("Your song group is: " + output);
+        //workerThread.Abort();
+        Debug.Log("Done.");
 
         OnCategorizeFinished.Invoke();
 
@@ -91,47 +85,8 @@ public class CategorizeSong : MonoBehaviour
     }
     private void RunTheMLModel()
     {
-        if(SongRelativePath)
-        {
-            kmeansModel.ExecutePythonScript(dataPath + "/MLData/test.py", out error, out output);
-        }
-        else
-        {
-            Debug.LogError("There is no audio path assigned to the Categorizer. Do it in script before the start of a new thread");
-        }
+        kmeansModel.ExecutePythonScript(dataPath + "/MLData/CategorizeSong.py", out error, out output);
     }
-
-    private void RunIronPythonModel()
-    {
-        if(SongRelativePath)
-        {
-            output = kmeansIPModel.PatchParameter("CategorizeSong.py", "Adele - Hello.mp3");
-        }
-        else
-        {
-            Debug.LogError("There is no audio path assigned to the Categorizer. Do it in script before the start of a new thread");
-        }
-    }
-    #endregion
-
-    #region Properties
-
-    // Return true only if there is a path given
-    public bool SongRelativePath
-    {
-        get{
-            bool songExist = (songRelativePath == null || songRelativePath == "") ? false : true;
-            return songExist;
-            // if(songRelativePath == null || songRelativePath == "")
-            // {
-            //     return false;
-            // }else
-            // {
-            //     return true;
-            // }
-        }
-    }
-
     #endregion
 
 }
