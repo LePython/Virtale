@@ -1,25 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using RunPythonScript;
 using System.Threading;
 using UnityEngine.Events;
 
-public class CategorizeSong : MonoBehaviour
+[Serializable]
+public class SongData
 {
+    public List<string> Name;
+    public List<int> FeatureGroup;   
+}
+public class FeatureAnalysisManager : MonoBehaviour
+{
+
     delegate void Categorize();
     Categorize categorizeDelegate;
     private Thread workerThread = null;
-
-    private string songRelativePath = "";
     public UnityEvent OnCategorizeFinished;
     private string dataPath;
     private string error;
     private string output = null;
 
     bool isDoneAnalyzing = false;
-    RunPythonScript.MLModelLoadingManager kmeansModel;
+    MLModelLoader kmeansModel;
 
+    #region Unity Methods
     // Start is called before the first frame update
     private void Awake() {
         dataPath = Application.dataPath;
@@ -27,8 +34,8 @@ public class CategorizeSong : MonoBehaviour
     void Start()
     {
 
-        kmeansModel = new RunPythonScript.MLModelLoadingManager();
-
+        kmeansModel = new MLModelLoader();
+        Debug.Log(GetFeatureList()[0]);
     }
 
     // Update is called once per frame
@@ -50,10 +57,10 @@ public class CategorizeSong : MonoBehaviour
         }
         //Debug.Log(output);
     }
-
+    #endregion
     /// <summary>
-    /// If there is no output, then wait till there is one.
-    /// If there is output, write it down the console
+    /// Wait till the the worker thread is done processing
+    /// When its done, stop the thread and execute OnCategorizeFinished method
     /// </summary>
     /// <returns></returns>
     private IEnumerator WaitForCategorizationEnd()
@@ -67,7 +74,9 @@ public class CategorizeSong : MonoBehaviour
             yield return new WaitForSeconds(.1f);
         }
 
-        //workerThread.Abort();
+        kmeansModel.IsProcessingDone = false;
+
+        workerThread.Abort();
         Debug.Log("Done processing.");
 
         OnCategorizeFinished.Invoke();
@@ -78,7 +87,7 @@ public class CategorizeSong : MonoBehaviour
     #region Delegate Methods
     /// <summary>
     /// Runs the model with given argmuents by accessing the
-    /// function from MLMOdelLoadingManager
+    /// function from MLModelLoadingManager
     /// </summary>
     private void RunTheMLModelTest()
     {
@@ -89,5 +98,29 @@ public class CategorizeSong : MonoBehaviour
         kmeansModel.ExecutePythonScript(dataPath + "/MLData/CategorizeSong.py", out error, out output);
     }
     #endregion
+
+
+    #region Public Methods
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private List<int> GetFeatureList()
+    {
+        SongData analyzedSongs = new SongData();
+
+        using (StreamReader reader = new StreamReader(dataPath + "/MLData/AnalyzedFeaturesList.json"))
+        {
+            
+            string jsonFile = reader.ReadToEnd();
+            analyzedSongs = JsonUtility.FromJson<SongData>(jsonFile); 
+
+        }
+        
+        return analyzedSongs.FeatureGroup;
+    }
+
+    #endregion
+
 
 }
