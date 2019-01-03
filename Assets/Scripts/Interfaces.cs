@@ -10,11 +10,8 @@ public interface IMusicPlayer
     void SelectSong(int index);
 }
 
-namespace RunPythonScript
+public interface IMLSharpPython
 {
-    public interface IMLSharpPython
-    {
-        //void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
-        void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
-    }
+    //void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
+    void ExecutePythonScript(string filePythonScript, out string standardError, out string output);
 }
