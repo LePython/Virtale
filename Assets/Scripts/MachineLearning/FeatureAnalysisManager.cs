@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using UnityEngine.Events;
+using Newtonsoft.Json;
 
 [Serializable]
 public class SongData
 {
-    public List<string> Name;
-    public List<int> FeatureGroup;   
+    public string Name;
+    public int FeatureGroup;
 }
 public class FeatureAnalysisManager : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class FeatureAnalysisManager : MonoBehaviour
 
         kmeansModel = new MLModelLoader();
         Debug.Log(GetFeatureList()[0]);
+
     }
 
     // Update is called once per frame
@@ -105,19 +107,20 @@ public class FeatureAnalysisManager : MonoBehaviour
     /// 
     /// </summary>
     /// <returns></returns>
-    private List<int> GetFeatureList()
+    private List<SongData> GetFeatureList()
     {
-        SongData analyzedSongs = new SongData();
+
+        List<SongData> analyzedSongs = new List<SongData>();
 
         using (StreamReader reader = new StreamReader(dataPath + "/MLData/AnalyzedFeaturesList.json"))
         {
             
             string jsonFile = reader.ReadToEnd();
-            analyzedSongs = JsonUtility.FromJson<SongData>(jsonFile); 
+            analyzedSongs = JsonConvert.DeserializeObject<List<SongData>>(jsonFile);
 
         }
         
-        return analyzedSongs.FeatureGroup;
+        return analyzedSongs;
     }
 
     #endregion

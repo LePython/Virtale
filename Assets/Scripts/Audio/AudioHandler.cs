@@ -109,7 +109,7 @@ namespace UnityEngine.AudioManager
         /// <param name="index"> Audio file index in playlist to stream </param>
         public void StreamAudio(MusicPlaylist playlist, int index)
         {
-            StartCoroutine(LoadAudio(playlist.Playlist[index]));
+            StartCoroutine(LoadAudio(playlist.SongPlaylist[index].songPath));
         }
         /// <summary>
         /// Stream audio file

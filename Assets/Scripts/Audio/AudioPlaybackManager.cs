@@ -36,7 +36,7 @@ namespace UnityEngine.AudioManager
         private AudioHandler audioHandler;
         private float _audioVolume = 0.0f;
 
-        private static int songNumber = -1;
+        private static int songNumber = 0;
 
         // Time when the music is paused is saved in this variable
         private static float musicPausedTime;
@@ -93,7 +93,7 @@ namespace UnityEngine.AudioManager
         void Start()
         {
             audioHandler = GetComponent<AudioHandler>();
-            SelectSong(0);
+            SelectSong(songNumber);
         }
 
         // Update is called once per frame
@@ -175,6 +175,9 @@ namespace UnityEngine.AudioManager
             }
         }
 
+        public MusicPlaylist MusicList { get => musicList; }
+        public static int SongNumber { get => songNumber; set => songNumber = value; }
+
 
         #endregion
 
@@ -201,7 +204,7 @@ namespace UnityEngine.AudioManager
             // Home button to select the next song in the playlist
             if (Input.GetKeyDown(KeyCode.N))
             {
-                if(songNumber >= musicList.Playlist.Count-1)
+                if(songNumber >= musicList.SongPlaylist.Count)
                 {
                     songNumber = 0;
                 }
