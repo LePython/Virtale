@@ -18,6 +18,8 @@ namespace UnityEngine.AudioManager
 
         public UnityEvent OnPlaybackStateChanged;
 
+        public UnityEvent OnSongEnd;
+
         #endregion
 
         #region Serialized Variables
@@ -75,6 +77,14 @@ namespace UnityEngine.AudioManager
                 }
             }
         }
+        IEnumerator WaitForSongEnd()
+        {
+            while(audioHandler.GetAudioSource.time < audioHandler.GetAudioSource.clip.length)
+            {
+                yield return null;
+            }
+            OnSongEnd.Invoke();
+        }
         #endregion
 
         #region Unity Methods
@@ -118,6 +128,7 @@ namespace UnityEngine.AudioManager
         {
             musicPlaybackState = PlaybackState.Pause;
             audioHandler.StreamAudio(musicList, index);
+            StartCoroutine(WaitForSongEnd());
         }
         // Set the Audio Volume to 0. if Audio volume is 0,
         // it pauses automatically
@@ -136,10 +147,12 @@ namespace UnityEngine.AudioManager
         }
         public void NextSong()
         {
+            StopCoroutine(WaitForSongEnd());
             Instance.SelectSong(++songNumber);
         }
         public void LastSong()
         {
+            StopCoroutine(WaitForSongEnd());
             Instance.SelectSong(--songNumber);
         }
         #endregion

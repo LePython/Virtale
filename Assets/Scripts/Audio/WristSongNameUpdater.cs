@@ -32,6 +32,9 @@ public class WristSongNameUpdater : MonoBehaviour
 
     public void UpdateTextMesh()
     {
-        textMesh.text = audioManager.MusicList.SongPlaylist[AudioPlaybackManager.SongNumber].songName;
+        if(gameObject.activeSelf)
+        {
+            textMesh.text = audioManager.MusicList.SongPlaylist[AudioPlaybackManager.SongNumber].songName;
+        }
     }
 }
