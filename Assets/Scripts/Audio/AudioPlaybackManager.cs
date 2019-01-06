@@ -79,11 +79,16 @@ namespace UnityEngine.AudioManager
         }
         IEnumerator WaitForSongEnd()
         {
-            while(audioHandler.GetAudioSource.time < audioHandler.GetAudioSource.clip.length)
+
+            while((int)audioHandler.GetAudioSource.time < (int)audioHandler.AudioLength)
             {
-                yield return null;
+                int tiem = (int)audioHandler.GetAudioSource.time;
+
+                Debug.Log(tiem + "/" + (int)audioHandler.AudioLength);
+                yield return new WaitForSeconds(0.2f);
             }
             OnSongEnd.Invoke();
+            yield break;
         }
         #endregion
 
@@ -126,9 +131,9 @@ namespace UnityEngine.AudioManager
 
         public void SelectSong(int index)
         {
-            musicPlaybackState = PlaybackState.Pause;
+            musicPlaybackState = PlaybackState.Play;
             audioHandler.StreamAudio(musicList, index);
-            StartCoroutine(WaitForSongEnd());
+            OnPlaybackStateChanged.Invoke();
         }
         // Set the Audio Volume to 0. if Audio volume is 0,
         // it pauses automatically
@@ -137,6 +142,7 @@ namespace UnityEngine.AudioManager
             musicPlaybackState = PlaybackState.Pause;
             AudioVolume        = 0f;   // Song pauses itself if audio volume is 0
             MusicPausedTime    = Time.time;
+            OnPlaybackStateChanged.Invoke();
         }
         // Set the volume to 1 and start playing the music
         public void PlayAudio()
@@ -144,15 +150,15 @@ namespace UnityEngine.AudioManager
             musicPlaybackState = PlaybackState.Play;
             AudioVolume        = 1f;
             audioHandler.GetAudioSource.Play();
+            OnPlaybackStateChanged.Invoke();
+            StartCoroutine(WaitForSongEnd());
         }
         public void NextSong()
         {
-            StopCoroutine(WaitForSongEnd());
             Instance.SelectSong(++songNumber);
         }
         public void LastSong()
         {
-            StopCoroutine(WaitForSongEnd());
             Instance.SelectSong(--songNumber);
         }
         #endregion
@@ -223,7 +229,6 @@ namespace UnityEngine.AudioManager
                 }
                 NextSong();
             }
-            OnPlaybackStateChanged.Invoke();
         }
         #endregion
     }

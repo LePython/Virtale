@@ -9,8 +9,10 @@ namespace UnityEngine.Visualizers
 
         #region Private Variables
 
+        private delegate void CreateSpectrumNodes();
         private delegate void UpdateSpectrumDel();
         UpdateSpectrumDel updateSpectrumDel;
+        CreateSpectrumNodes createSpectrumNodes;
         
         private List<Transform> spectrumNodes = new List<Transform>();
 
@@ -19,7 +21,7 @@ namespace UnityEngine.Visualizers
 
         public SpectrumAnalyzer.AudioDataReturnType audioDataType;
 
-        public bool updateSpectrum = false;
+        private bool updateSpectrum = false;
 
         #endregion
 
@@ -49,17 +51,19 @@ namespace UnityEngine.Visualizers
 
         #endregion
 
+        // Update Spectrum if music is playing
+        // Coroutine is started if music is playing
+        // otherwise it is stopped
         private IEnumerator SpectrumUpdater()
         {
-            
+            Debug.Log("Starting new Coroutine to update spectrum nodes");
             while(updateSpectrum)
             {
-                Debug.Log("updating");
                 updateSpectrumDel();
                 
                 yield return null;
             }
-
+            yield break;
         }
 
         #region Unity Methods
@@ -78,18 +82,21 @@ namespace UnityEngine.Visualizers
                 enabled = false;
                 return;
             }
+            // Check what to analyze and assign the method accordingly
             if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
             {
                 updateSpectrumDel = UpdateDividedSpectrum;
+                createSpectrumNodes = CreateCustomVisualizer;
             }else
             {
                 updateSpectrumDel = UpdateSpectrum;
+                createSpectrumNodes = CreateDefaultVisualizer;
             }
         }
 
         private void Start()
         {
-            CreateVisualizer();
+            createSpectrumNodes();
         }
 
         #endregion
@@ -98,16 +105,11 @@ namespace UnityEngine.Visualizers
         #region Private Methods
 
         // Instantiate the spectrum nodes
-        private void CreateVisualizer()
+        private void CreateDefaultVisualizer()
         {
-            for (int i = 0; i < spectrumNodeCount; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Transform newCube = Instantiate(defaultSpectrumPrefab);
-                if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
-                {
-                    Material cubeMaterial = newCube.GetComponent<Renderer>().material;
-                    cubeMaterial.SetColor("_EmissionColor", spectrumColor);
-                }
                 newCube.name = "Spectrum " + i;
                 newCube.transform.SetParent(gameObject.transform, true);
                 newCube.transform.localPosition = new Vector3(distanceBetweenNodes*i*newCube.transform.localScale.x, 0f, 0f);
@@ -115,13 +117,26 @@ namespace UnityEngine.Visualizers
                 spectrumNodes.Add(newCube);
                 
             }
-            if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
-            {
-                CreateCircleFromObjects(spectrumNodes);
-            }
         }
 
-            /// <summary>
+        private void CreateCustomVisualizer()
+        {
+            for (int i = 0; i < spectrumNodeCount; i++)
+            {
+                Transform newCube = Instantiate(defaultSpectrumPrefab);
+                Material cubeMaterial = newCube.GetComponent<Renderer>().material;
+                cubeMaterial.SetColor("_EmissionColor", spectrumColor);
+                newCube.name = "Spectrum " + i;
+                newCube.transform.SetParent(gameObject.transform, true);
+                CreateCircleFromObjects(spectrumNodes);
+                newCube.transform.localScale = spectrumNodeScale;
+                spectrumNodes.Add(newCube);
+                
+            }
+
+        }
+
+        /// <summary>
         /// Update the spectrum meshes: 
         /// Scales the spectrum meshes according to the frequency of current sample
         /// </summary>
