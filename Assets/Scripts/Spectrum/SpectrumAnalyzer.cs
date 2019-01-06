@@ -13,6 +13,7 @@ namespace UnityEngine.AudioAnalyzer
             LowRange,
             HighRange,
             DefaultBands,
+            CustomBands
         }
 
         #region Private Variables
@@ -56,6 +57,16 @@ namespace UnityEngine.AudioAnalyzer
                     return GetHighFrequencyRangeSpectrum();
                 case AudioDataReturnType.DefaultBands:
                     return DivideIntoFrequencyBands();
+                default:
+                    return AudioSpectrumRawData;
+            }
+        }
+        public float[] GetDividedSpectrum <T>(AudioDataReturnType filter, List<T> objs)
+        {
+            switch (filter)
+            {
+                case AudioDataReturnType.CustomBands:
+                    return DivideIntoFrequencyBands(objs.Count);
                 default:
                     return AudioSpectrumRawData;
             }
@@ -214,14 +225,39 @@ namespace UnityEngine.AudioAnalyzer
             return endData;
         }
 
-        private float[] DivideIntoFrequencyBands()
+        private float[] DivideIntoFrequencyBands(int listSize)
         {
 
-            float[] endData = new float[SpectrumNodeSize];
+            float[] endData = new float[listSize];
 
             int currentSample = 0;
 
-            for (int i = 0; i < SpectrumNodeSize; i++)
+            for (int i = 0; i < listSize; i++)
+            {
+
+                int band = CalculateBands(i);
+
+                float averageOfFrequencyBand = 0;
+
+                for (int j = 0; j < band; j++)
+                {
+                    averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
+                    currentSample++;
+                }
+                averageOfFrequencyBand /= band;
+                endData[i] = averageOfFrequencyBand;
+            }
+
+            return endData;
+        }
+        private float[] DivideIntoFrequencyBands()
+        {
+
+            float[] endData = new float[spectrumNodeSize];
+
+            int currentSample = 0;
+
+            for (int i = 0; i < spectrumNodeSize; i++)
             {
 
                 int band = CalculateBands(i);
