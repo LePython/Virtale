@@ -36,6 +36,8 @@ namespace UnityEngine.AudioManager
         // Current audio attached to the audio source component
         private static AudioClip audioToPlay;
 
+        private float audioLength;
+
         #endregion
 
         #region Unity Methods
@@ -98,6 +100,8 @@ namespace UnityEngine.AudioManager
             }
         }
 
+        public float AudioLength { get => audioLength; }
+
         #endregion
 
         #region Private Methods
@@ -129,7 +133,8 @@ namespace UnityEngine.AudioManager
             yield return request;
 
             audioToPlay = request.GetAudioClip(true, true, AudioType.WAV);
-
+            
+            audioLength = AudioToPlay.length;
             audioSource.clip = audioToPlay;
 
             // Invoke selected method when the new song is selected

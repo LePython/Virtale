@@ -209,7 +209,7 @@ namespace UnityEngine.AudioAnalyzer
             for (int i = 0; i < SpectrumNodeSize; i++)
             {
 
-                int band = CalculateBands(i);
+                int band = CalculateBandsAuto(i);
 
                 float averageOfFrequencyBand = 0;
 
@@ -224,32 +224,35 @@ namespace UnityEngine.AudioAnalyzer
 
             return endData;
         }
-
+        // Divides data into frequency bands for a preffered lsit size
         private float[] DivideIntoFrequencyBands(int listSize)
         {
-
-            float[] endData = new float[listSize];
+            List<float> endData = new List<float>();
 
             int currentSample = 0;
 
-            for (int i = 0; i < listSize; i++)
+            for (int i = 0; i < 8; i++)
             {
 
-                int band = CalculateBands(i);
-
+                int band = CalculateBandsAuto(i);
+                //Debug.Log(band);
                 float averageOfFrequencyBand = 0;
 
-                for (int j = 0; j < band; j++)
+                for(int a = 1; a <= listSize/8; a++)
                 {
-                    averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
-                    currentSample++;
+                    for (int j = 0; j < band/(listSize/8); j++)
+                    {
+                        averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
+                        currentSample++;
+                    }
+                    averageOfFrequencyBand /= band;
+                    endData.Add(averageOfFrequencyBand);
                 }
-                averageOfFrequencyBand /= band;
-                endData[i] = averageOfFrequencyBand;
             }
 
-            return endData;
+            return endData.ToArray();
         }
+        // Automatically assigns 8 bands
         private float[] DivideIntoFrequencyBands()
         {
 
@@ -260,8 +263,7 @@ namespace UnityEngine.AudioAnalyzer
             for (int i = 0; i < spectrumNodeSize; i++)
             {
 
-                int band = CalculateBands(i);
-
+                int band = CalculateBandsAuto(i);
                 float averageOfFrequencyBand = 0;
 
                 for (int j = 0; j < band; j++)
@@ -286,11 +288,34 @@ namespace UnityEngine.AudioAnalyzer
             endValue /= data.Length;
             return endValue;
         }
+        // Calculates bands with the preferred node size
+        // Works only with 1024 sample size
+        // maximum size is 32, minimum is 8
+        // size must be a number of 2^n
+        private int CalculateBands(int n, int size)
+        {
+            int band = 0;
+            if(size == 8)
+            {
+                band = (sampleSize/ 512 * 2) * (int)Mathf.Pow(2, n);
+            }
+            else if(size == 16)
+            {
+                band = ((sampleSize/ 512 * 2) * (int)Mathf.Pow(1.31732f, n));
+            }
+            else if(size == 32)
+            {
+                band = ((sampleSize/ 512 * 2) * (int)Mathf.Pow(1.11166f, n));
+            }
+
+            return band;
+        }
         #endregion
 
         #region Lambda Expressions
         // Add ((sampleSize/512) * 2) instead of 2*.. if you wish to have variable sample size( 1024 samples on default )
-        public static Func<int, int> CalculateBands = band => ((sampleSize / 512) * 2) * (int)Mathf.Pow(2, band);
+        // Works only with spectrum node count of 8
+        public static Func<int, int> CalculateBandsAuto = band => ((sampleSize / 512) * 2) * (int)Mathf.Pow(2, band);
         #endregion
 
         #region Properties
