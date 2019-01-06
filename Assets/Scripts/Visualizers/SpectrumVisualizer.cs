@@ -7,35 +7,60 @@ namespace UnityEngine.Visualizers
 {
     public class SpectrumVisualizer : MonoBehaviour {
 
+        #region Private Variables
+
+        private delegate void UpdateSpectrumDel();
+        UpdateSpectrumDel updateSpectrumDel;
+        
+        private List<Transform> spectrumNodes = new List<Transform>();
+
+        [SerializeField]
+        private SpectrumAnalyzer spectrumAnalyzer;
+
+        public SpectrumAnalyzer.AudioDataReturnType audioDataType;
+
+        public bool updateSpectrum = false;
+
+        #endregion
 
         #region Serialized variables
+        
+        [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
+        private int spectrumNodeCount = 8;
 
         // Default spectrum prefab
         [SerializeField]
         private Transform defaultSpectrumPrefab;
 
-        [SerializeField]
+        [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.DefaultBands), SerializeField]
         private float distanceBetweenNodes;
 
         [SerializeField, Range(1,10)]
-        private float nodesMovementStrength;
+        private float nodesMovementStrength = 1f;
+
+        [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
+        private Color spectrumColor;
+
+        [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
+        private int radius;
+
+        [SerializeField]
+        private Vector3 spectrumNodeScale = new Vector3(1f, 1f, 1f);
 
         #endregion
 
-        #region Private Variables
+        private IEnumerator SpectrumUpdater()
+        {
+            
+            while(updateSpectrum)
+            {
+                Debug.Log("updating");
+                updateSpectrumDel();
+                
+                yield return null;
+            }
 
-        private static int spectrumNodeSize = 8;
-
-        private Transform[] spectrumNodes = new Transform[spectrumNodeSize];
-
-        [SerializeField]
-        private SpectrumAnalyzer spectrumAnalyzer;
-
-        [SerializeField]
-        private SpectrumAnalyzer.AudioDataReturnType audioDataType;
-
-        #endregion
-
+        }
 
         #region Unity Methods
 
@@ -53,17 +78,18 @@ namespace UnityEngine.Visualizers
                 enabled = false;
                 return;
             }
+            if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
+            {
+                updateSpectrumDel = UpdateDividedSpectrum;
+            }else
+            {
+                updateSpectrumDel = UpdateSpectrum;
+            }
         }
 
         private void Start()
         {
             CreateVisualizer();
-        }
-
-        //TODO Create a coroutine instead of using an Update function, 
-        //because the visualizer might not even need to be updated the whole time
-        private void Update() {
-            UpdateSpectrum();
         }
 
         #endregion
@@ -74,26 +100,53 @@ namespace UnityEngine.Visualizers
         // Instantiate the spectrum nodes
         private void CreateVisualizer()
         {
-            for (int i = 0; i < spectrumNodeSize; i++)
+            for (int i = 0; i < spectrumNodeCount; i++)
             {
                 Transform newCube = Instantiate(defaultSpectrumPrefab);
+                if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
+                {
+                    Material cubeMaterial = newCube.GetComponent<Renderer>().material;
+                    cubeMaterial.SetColor("_EmissionColor", spectrumColor);
+                }
                 newCube.name = "Spectrum " + i;
                 newCube.transform.SetParent(gameObject.transform, true);
                 newCube.transform.localPosition = new Vector3(distanceBetweenNodes*i*newCube.transform.localScale.x, 0f, 0f);
-                spectrumNodes[i] = newCube;
+                newCube.transform.localScale = spectrumNodeScale;
+                spectrumNodes.Add(newCube);
+                
+            }
+            if(audioDataType == SpectrumAnalyzer.AudioDataReturnType.CustomBands)
+            {
+                CreateCircleFromObjects(spectrumNodes);
             }
         }
+
             /// <summary>
         /// Update the spectrum meshes: 
         /// Scales the spectrum meshes according to the frequency of current sample
         /// </summary>
         private void UpdateSpectrum()
         {
-            for (int i = 0; i < SpectrumNodes.Length; i++)
+            for (int i = 0; i < SpectrumNodes.Count; i++)
             {
+
                 float scaleFactor = spectrumAnalyzer.GetSpectrum(audioDataType)[i] * nodesMovementStrength;
+
                 scaleFactor = Mathf.Lerp(SpectrumNodes[i].localScale.y, scaleFactor, 0.25f);
-                Vector3 newSize = DefaultSpectrumPrefab.localScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
+                Vector3 newSize = spectrumNodeScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
+                SpectrumNodes[i].transform.localScale = newSize;
+            }
+        }
+        private void UpdateDividedSpectrum()
+        {
+            for (int i = 0; i < SpectrumNodes.Count; i++)
+            {
+                float scaleFactor = 0f;
+
+                scaleFactor = spectrumAnalyzer.GetDividedSpectrum<Transform>(audioDataType, SpectrumNodes)[i] * nodesMovementStrength;
+
+                scaleFactor = Mathf.Lerp(SpectrumNodes[i].localScale.y, scaleFactor, 0.25f);
+                Vector3 newSize = spectrumNodeScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
                 SpectrumNodes[i].transform.localScale = newSize;
             }
         }
@@ -101,11 +154,43 @@ namespace UnityEngine.Visualizers
         // Scale the z value of spectrum to 1f
         private void ResetSpectrum()
         {
-            for (int i = 0; i < SpectrumNodes.Length; i++)
+            for (int i = 0; i < SpectrumNodes.Count; i++)
             {
                 float scaleFactor = Mathf.Lerp(SpectrumNodes[i].localScale.y, 1f, 0.2f);
-                Vector3 newSize = DefaultSpectrumPrefab.localScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
+                Vector3 newSize = spectrumNodeScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
                 SpectrumNodes[i].localScale = newSize;
+            }
+        }
+        /// <summary>
+        /// Create a circle from the given object list and set the position accordingly
+        /// </summary>
+        /// <param name="objectList"></param>
+        private void CreateCircleFromObjects (List<Transform> objectList)
+        {
+            // Den Umfang ausrechnen und danach diesen durch die Anzahl von Elemente teilen
+            float abstand = 2 * Mathf.PI/objectList.Count;
+
+            for(int i = 0; i < objectList.Count; i++)
+            {
+
+
+                float xCoordinate = radius * Mathf.Cos(abstand * i);
+                float yCoordinate = radius * Mathf.Sin(abstand * i);
+
+                objectList[i].localPosition = new Vector3(xCoordinate, 0f, yCoordinate);
+            }
+
+        }
+        public void CheckPlaybackState()
+        {
+            if(UnityEngine.AudioManager.AudioPlaybackManager.musicPlaybackState == UnityEngine.AudioManager.AudioPlaybackManager.PlaybackState.Play)
+            {
+                updateSpectrum = true;
+                StartCoroutine(SpectrumUpdater());
+            }else
+            {
+                updateSpectrum = false;
+                StopCoroutine(SpectrumUpdater());
             }
         }
         #endregion
@@ -113,7 +198,7 @@ namespace UnityEngine.Visualizers
         #region Properties
 
         // Get the spectrum nodes
-        public Transform[] SpectrumNodes
+        public List<Transform> SpectrumNodes
         {
             get
             {

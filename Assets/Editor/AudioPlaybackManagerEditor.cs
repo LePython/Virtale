@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.AudioManager;
+using UnityEngine.AudioManager;
 
 [CustomEditor(typeof(AudioPlaybackManager))]
 public class AudioPlaybackManagerEditor : Editor {
@@ -19,7 +20,14 @@ public class AudioPlaybackManagerEditor : Editor {
         }
         if(GUILayout.Button("Pause/Play"))
         {
-            audioManager.PauseAudio();
+            if (AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Pause)
+            {
+                audioManager.PlayAudio();
+            }
+            else
+            {
+                audioManager.PauseAudio();
+            }
         }
         if(GUILayout.Button("Next Song"))
         {
