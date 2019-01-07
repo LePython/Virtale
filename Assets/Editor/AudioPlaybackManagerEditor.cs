@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.AudioManager;
-using UnityEngine.AudioManager;
 
 [CustomEditor(typeof(AudioPlaybackManager))]
 public class AudioPlaybackManagerEditor : Editor {
