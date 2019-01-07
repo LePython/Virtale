@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 namespace UnityEngine.AudioManager
 {
@@ -26,6 +27,9 @@ namespace UnityEngine.AudioManager
 
         [SerializeField]
         private MusicPlaylist musicList;
+
+        [SerializeField]
+        private TextMeshProUGUI currentTimeTextMesh;
         #endregion
         #region Public Variables
 
@@ -79,13 +83,28 @@ namespace UnityEngine.AudioManager
         }
         IEnumerator WaitForSongEnd()
         {
+            // die Lieddauer in Minuten und Sekunden umwandeln
+            int audioLength = (int)audioHandler.AudioLength;
+            int minLength = Mathf.FloorToInt(audioLength / 60);
+            int secLength = Mathf.FloorToInt(audioLength % 60);
+            string secLengthS = secLength.ToString();
+            if(secLength < 10)
+            {
+                secLengthS = "0" + secLength;
+            }
 
-            while((int)audioHandler.GetAudioSource.time < (int)audioHandler.AudioLength)
+            // Die gegenwärtige Liedzeit in Minuten und Sekunden zeigen
+            while((int)audioHandler.GetAudioSource.time < audioLength)
             {
                 int tiem = (int)audioHandler.GetAudioSource.time;
+                int min = Mathf.FloorToInt(tiem / 60);
+                int sec = Mathf.FloorToInt(tiem % 60);
+                
+                string secunds = (sec < 10) ? "0" + sec : sec.ToString();
 
-                Debug.Log(tiem + "/" + (int)audioHandler.AudioLength);
-                yield return new WaitForSeconds(0.2f);
+                currentTimeTextMesh.text = min + ":" + secunds + "/" + minLength + ":" + secLengthS;
+
+                yield return new WaitForSeconds(.2f);
             }
             OnSongEnd.Invoke();
             yield break;
@@ -114,14 +133,6 @@ namespace UnityEngine.AudioManager
         // Update is called once per frame
         void Update()
         {
-            //int min = Mathf.FloorToInt(audioHandler.GetAudioSource.time / 60);
-            //int sec = Mathf.FloorToInt(audioHandler.GetAudioSource.time % 60);
-            ////Debug.Log(min + "m:" + sec +"s");
-            // if ((int)AudioHandler.GetAudioSource.time == (int)AudioHandler.GetAudioSource.clip.length)
-            // {
-            //     musicPlaybackState = PlaybackState.Pause;
-            //     NextSong();
-            // }
             ManageInput();
         }
 
@@ -131,9 +142,9 @@ namespace UnityEngine.AudioManager
 
         public void SelectSong(int index)
         {
-            musicPlaybackState = PlaybackState.Play;
+            StopCoroutine("WaitForSongEnd");
+            musicPlaybackState = PlaybackState.Pause;
             audioHandler.StreamAudio(musicList, index);
-            OnPlaybackStateChanged.Invoke();
         }
         // Set the Audio Volume to 0. if Audio volume is 0,
         // it pauses automatically
@@ -151,7 +162,6 @@ namespace UnityEngine.AudioManager
             AudioVolume        = 1f;
             audioHandler.GetAudioSource.Play();
             OnPlaybackStateChanged.Invoke();
-            StartCoroutine(WaitForSongEnd());
         }
         public void NextSong()
         {
@@ -160,6 +170,11 @@ namespace UnityEngine.AudioManager
         public void LastSong()
         {
             Instance.SelectSong(--songNumber);
+        }
+
+        public void StartWaitingOnEnd()
+        {
+            StartCoroutine("WaitForSongEnd");
         }
         #endregion
 
