@@ -231,24 +231,39 @@ namespace UnityEngine.AudioAnalyzer
 
             int currentSample = 0;
 
-            for (int i = 0; i < 8; i++)
-            {
+            int samples = (sampleSize - 256)/listSize;
 
-                int band = CalculateBandsAuto(i);
-                //Debug.Log(band);
+            for(int i = 0; i < listSize; i ++)
+            {
                 float averageOfFrequencyBand = 0;
 
-                for(int a = 1; a <= listSize/8; a++)
+                for(int band = 0; band < samples; band++ )
                 {
-                    for (int j = 0; j < band/(listSize/8); j++)
-                    {
-                        averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
-                        currentSample++;
-                    }
-                    averageOfFrequencyBand /= band;
-                    endData.Add(averageOfFrequencyBand);
+                    averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
+                    currentSample++;
                 }
+                averageOfFrequencyBand /= samples;
+                endData.Add(averageOfFrequencyBand);
             }
+            // for (int i = 0; i < 8; i++)
+            // {
+
+            //     int band = CalculateBandsAuto(i);
+            //     //Debug.Log(band);
+            //     float averageOfFrequencyBand = 0;
+
+
+            //     for(int a = 1; a <= listSize/8; a++)
+            //     {
+            //         for (int j = 0; j < band/(listSize/8); j++)
+            //         {
+            //             averageOfFrequencyBand += audioSpectrumRawData[currentSample] * (currentSample + 1);
+            //             currentSample++;
+            //         }
+            //         averageOfFrequencyBand /= band;
+            //         endData.Add(averageOfFrequencyBand);
+            //     }
+            // }
 
             return endData.ToArray();
         }
