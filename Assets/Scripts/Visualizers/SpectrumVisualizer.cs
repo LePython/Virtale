@@ -44,10 +44,13 @@ namespace UnityEngine.Visualizers
         private Color spectrumColor;
 
         [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
-        private int radius;
+        private float radius;
 
         [SerializeField]
         private Vector3 spectrumNodeScale = new Vector3(1f, 1f, 1f);
+
+        [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
+        private Transform lookAtTargetObject;
 
         #endregion
 
@@ -128,12 +131,10 @@ namespace UnityEngine.Visualizers
                 cubeMaterial.SetColor("_EmissionColor", spectrumColor);
                 newCube.name = "Spectrum " + i;
                 newCube.transform.SetParent(gameObject.transform, true);
-                CreateCircleFromObjects(spectrumNodes);
                 newCube.transform.localScale = spectrumNodeScale;
                 spectrumNodes.Add(newCube);
-                
             }
-
+            CreateCircleFromObjects(spectrumNodes);
         }
 
         /// <summary>
@@ -158,12 +159,15 @@ namespace UnityEngine.Visualizers
             {
                 float scaleFactor = 0f;
 
-                scaleFactor = spectrumAnalyzer.GetDividedSpectrum<Transform>(audioDataType, SpectrumNodes)[i] * nodesMovementStrength;
+                scaleFactor = spectrumAnalyzer.GetDividedSpectrum<Transform>(audioDataType, SpectrumNodes)[i] * nodesMovementStrength * 10;
 
                 scaleFactor = Mathf.Lerp(SpectrumNodes[i].localScale.y, scaleFactor, 0.25f);
+
                 Vector3 newSize = spectrumNodeScale + new Vector3(0f, Mathf.Abs(scaleFactor), 0f);
                 SpectrumNodes[i].transform.localScale = newSize;
+                //SpectrumNodes[i].transform.LookAt(lookAtTargetObject);
             }
+
         }
 
         // Scale the z value of spectrum to 1f
@@ -187,15 +191,15 @@ namespace UnityEngine.Visualizers
 
             for(int i = 0; i < objectList.Count; i++)
             {
-
-
                 float xCoordinate = radius * Mathf.Cos(abstand * i);
                 float yCoordinate = radius * Mathf.Sin(abstand * i);
 
                 objectList[i].localPosition = new Vector3(xCoordinate, 0f, yCoordinate);
+                objectList[i].LookAt(lookAtTargetObject);
             }
 
         }
+        // Checks if song is playing, if so, then starts a coroutine which updates spectrum
         public void CheckPlaybackState()
         {
             if(UnityEngine.AudioManager.AudioPlaybackManager.musicPlaybackState == UnityEngine.AudioManager.AudioPlaybackManager.PlaybackState.Play)
