@@ -145,6 +145,7 @@ namespace UnityEngine.AudioManager
             StopCoroutine("WaitForSongEnd");
             musicPlaybackState = PlaybackState.Pause;
             audioHandler.StreamAudio(musicList, index);
+            OnPlaybackStateChanged.Invoke();
         }
         // Set the Audio Volume to 0. if Audio volume is 0,
         // it pauses automatically
