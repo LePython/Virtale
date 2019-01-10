@@ -5,52 +5,56 @@ using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 
-public class MLModelLoader : IMLSharpPython
+namespace UnityEngine.ML
 {
-    //C:/Users/me/AppData/Local/Programs/Python/Python36
-    //C:/Windows/py.exe
-
-    private bool isProcessingDone = false;
-    private string filePythonExePath = @"C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
-
-    /// <summary>
-    /// Without arguments
-    /// /// </summary>
-    /// <param name="filePythonScript"></param>
-    /// <param name="standardError"></param>
-    /// <param name="output"></param>
-    public void ExecutePythonScript(string filePythonScript, out string standardError, out string output)
+    public class MLModelLoader : IMLSharpPython
     {
-        standardError = string.Empty;
-        ProcessStartInfo startInfo = new ProcessStartInfo
-        {
-            FileName = filePythonExePath,
-            Arguments = string.Format("{0}", filePythonScript),
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        Process process = Process.Start(startInfo);
-        process.EnableRaisingEvents = true;
-        process.Exited += new EventHandler(process_Exited);
+        //C:/Users/me/AppData/Local/Programs/Python/Python36
+        //C:/Windows/py.exe
 
-        using (StreamReader reader = process.StandardOutput)
+        private bool isProcessingDone = false;
+        private string filePythonExePath = @"C:/Users/me/AppData/Local/Programs/Python/Python36/python.exe";
+
+        /// <summary>
+        /// Without arguments
+        /// /// </summary>
+        /// <param name="filePythonScript"></param>
+        /// <param name="standardError"></param>
+        /// <param name="output"></param>
+        public void ExecutePythonScript(string filePythonScript, out string standardError, out string output)
         {
-            standardError = process.StandardError.ReadToEnd();
-            string result = reader.ReadToEnd();
-            output = result;
+            standardError = string.Empty;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = filePythonExePath,
+                Arguments = string.Format("{0}", filePythonScript),
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+            Process process = Process.Start(startInfo);
+            process.EnableRaisingEvents = true;
+            process.Exited += new EventHandler(process_Exited);
+
+            using (StreamReader reader = process.StandardOutput)
+            {
+                standardError = process.StandardError.ReadToEnd();
+                string result = reader.ReadToEnd();
+                output = result;
+            }
+            process.WaitForExit();
         }
-        process.WaitForExit();
-    }
-    void process_Exited(object sender, EventArgs e)
-    {
-        isProcessingDone = true;
+        void process_Exited(object sender, EventArgs e)
+        {
+            isProcessingDone = true;
+        }
+
+        public bool IsProcessingDone
+        {
+            get => isProcessingDone;
+            set => value = isProcessingDone;
+        }
     }
 
-    public bool IsProcessingDone
-    {
-        get => isProcessingDone;
-        set => value = isProcessingDone;
-    }
 }
