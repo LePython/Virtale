@@ -21,7 +21,6 @@ namespace UnityEngine.Visualizers
 
         public SpectrumAnalyzer.AudioDataReturnType audioDataType;
 
-        private bool updateSpectrum = false;
 
         #endregion
 
@@ -60,17 +59,15 @@ namespace UnityEngine.Visualizers
         private IEnumerator SpectrumUpdater()
         {
             Debug.Log("Starting new Coroutine to update spectrum nodes");
-            while(updateSpectrum)
+            while(true)
             {
                 updateSpectrumDel();
                 
                 yield return null;
             }
-            yield break;
         }
 
         #region Unity Methods
-
         private void Awake()
         {
             if (!defaultSpectrumPrefab)
@@ -199,18 +196,14 @@ namespace UnityEngine.Visualizers
             }
 
         }
-        // Checks if song is playing, if so, then starts a coroutine which updates spectrum
-        public void CheckPlaybackState()
+
+        public void StartSpectrumUpdating()
         {
-            if(UnityEngine.AudioManager.AudioPlaybackManager.musicPlaybackState == UnityEngine.AudioManager.AudioPlaybackManager.PlaybackState.Play)
-            {
-                updateSpectrum = true;
-                StartCoroutine(SpectrumUpdater());
-            }else
-            {
-                updateSpectrum = false;
-                StopCoroutine(SpectrumUpdater());
-            }
+            StartCoroutine("SpectrumUpdater");
+        }
+        public void StopSpectrumUpdating()
+        {
+            StopCoroutine("SpectrumUpdater");
         }
         #endregion
 

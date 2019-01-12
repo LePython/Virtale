@@ -30,7 +30,9 @@ namespace UnityEngine.AudioManager
 
         [SerializeField]
         private TextMeshProUGUI currentTimeTextMesh;
+
         #endregion
+
         #region Public Variables
 
         public static PlaybackState musicPlaybackState = PlaybackState.Pause;
@@ -38,7 +40,6 @@ namespace UnityEngine.AudioManager
         #endregion
 
         #region Private Variables
-
         private AudioHandler audioHandler;
         private float _audioVolume = 0.0f;
 
@@ -128,7 +129,6 @@ namespace UnityEngine.AudioManager
         {
             audioHandler = GetComponent<AudioHandler>();
             SelectSong(songNumber);
-            OnPlaybackStateChanged.Invoke();
         }
 
         // Update is called once per frame
@@ -167,16 +167,19 @@ namespace UnityEngine.AudioManager
         public void NextSong()
         {
             Instance.SelectSong(++songNumber);
+            OnPlaybackStateChanged.Invoke();
         }
         public void LastSong()
         {
             Instance.SelectSong(--songNumber);
+            OnPlaybackStateChanged.Invoke();
         }
 
         public void StartWaitingOnEnd()
         {
             StartCoroutine("WaitForSongEnd");
         }
+
         #endregion
 
         #region Properties
