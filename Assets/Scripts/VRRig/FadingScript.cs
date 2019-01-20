@@ -9,19 +9,6 @@ public class FadingScript : MonoBehaviour
     private UnityEvent OnFadeFinished;
     private Animator animator;
 
-    private IEnumerator WaitForFadeStateChange(float delay)
-    {
-        float currentTime = Time.time;
-
-        while(Time.time - currentTime > delay)
-        {
-            yield return null;
-        }
-
-        OnFadeFinished.Invoke();
-
-        yield break;
-    }
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -29,6 +16,10 @@ public class FadingScript : MonoBehaviour
     public void SetFadeState(bool stet)
     {
         animator.SetBool("FadeIn", stet);
-        StartCoroutine(WaitForFadeStateChange(1.0f));
+        Invoke("InvokeOnFade", 1f);
+    }
+    private void InvokeOnFade()
+    {
+        OnFadeFinished.Invoke();
     }
 }
