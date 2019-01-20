@@ -58,9 +58,9 @@ public class SpeechSequence : MonoBehaviour
     void Start()
     {
         transcriptList = new List<Transcript>();
-        transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen zu Virtale in VR"));
-        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen strecken Sie Ihre linke Hand aus", 1.0f));
-        transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um das Menü zu öffnen, ", 1.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen auf Virtale in VR", 2.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen, strecken Sie Ihre linke Hand aus", 1.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um das Menü zu öffnen, berühren Sie mit Ihrer rechten Hand die Handinnenfläche Ihrer linken Hand", 2.0f));
         audioHandler.StreamAudio(transcriptList[transcriptListIndex].transcriptPath);
         transcriptText.text = transcriptList[transcriptListIndex].transcriptText;
     }
