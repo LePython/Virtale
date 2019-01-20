@@ -39,7 +39,7 @@ namespace UnityEngine.AudioAnalyzer
         }
 
         private void Update() {
-            audioSource.GetSpectrumData(audioSpectrumRawData, 0, FFTWindow.BlackmanHarris);
+            audioSource.GetSpectrumData(audioSpectrumRawData, 0, FFTWindow.Hamming);
         }
 
         /// <summary>

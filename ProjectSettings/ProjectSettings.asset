@@ -289,7 +289,6 @@ PlayerSettings:
     m_Enabled: 1
     m_Devices:
     - Oculus
-    - OpenVR
   - m_BuildTarget: iOS
     m_Enabled: 1
     m_Devices:

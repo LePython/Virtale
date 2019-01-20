@@ -29,6 +29,9 @@ namespace UnityEngine.Visualizers
         [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
         private int spectrumNodeCount = 8;
 
+        [SerializeField]
+        private bool updateConstantly = false;
+
         // Default spectrum prefab
         [SerializeField]
         private Transform defaultSpectrumPrefab;
@@ -97,6 +100,10 @@ namespace UnityEngine.Visualizers
         private void Start()
         {
             createSpectrumNodes();
+            if(updateConstantly)
+            {
+                StartCoroutine("SpectrumUpdater");
+            }
         }
 
         #endregion
@@ -199,11 +206,13 @@ namespace UnityEngine.Visualizers
 
         public void StartSpectrumUpdating()
         {
-            StartCoroutine("SpectrumUpdater");
+            if(!updateConstantly)
+                StartCoroutine("SpectrumUpdater");
         }
         public void StopSpectrumUpdating()
         {
-            StopCoroutine("SpectrumUpdater");
+            if(!updateConstantly)
+                StopCoroutine("SpectrumUpdater");
         }
         #endregion
 
