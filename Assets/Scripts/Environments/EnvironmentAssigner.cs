@@ -107,33 +107,43 @@ public class EnvironmentAssigner : MonoBehaviour
             switch(currentEnvironment)
             {
                 case environment.G0:
+                    G0Visualizer.ResetSpectrum();
                     G0Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G1:
+                    G0Visualizer.ResetSpectrum();
                     G1Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G2:
+                    G0Visualizer.ResetSpectrum();
                     G2Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G3:
+                    G0Visualizer.ResetSpectrum();
                     G3Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G4:
+                    G0Visualizer.ResetSpectrum();
                     G4Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G5:
+                    G0Visualizer.ResetSpectrum();
                     G5Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G6:
+                    G0Visualizer.ResetSpectrum();
                     G6Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G7:
+                    G0Visualizer.ResetSpectrum();
                     G7Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G8:
+                    G0Visualizer.ResetSpectrum();
                     G8Visualizer.StopSpectrumUpdating();
                     break;
                 case environment.G9:
+                    G0Visualizer.ResetSpectrum();
                     G9Visualizer.StopSpectrumUpdating();
                     break;
             }
