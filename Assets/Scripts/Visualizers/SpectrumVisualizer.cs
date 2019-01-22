@@ -105,6 +105,13 @@ namespace UnityEngine.Visualizers
                 StartCoroutine("SpectrumUpdater");
             }
         }
+        private void OnEnable()
+        {
+            if(updateConstantly)
+            {
+                StartCoroutine("SpectrumUpdater");
+            }
+        }
 
         #endregion
 
@@ -175,7 +182,7 @@ namespace UnityEngine.Visualizers
         }
 
         // Scale the z value of spectrum to 1f
-        private void ResetSpectrum()
+        public void ResetSpectrum()
         {
             for (int i = 0; i < SpectrumNodes.Count; i++)
             {
