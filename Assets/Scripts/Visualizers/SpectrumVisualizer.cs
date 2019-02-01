@@ -45,6 +45,9 @@ namespace UnityEngine.Visualizers
         [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
         private Color spectrumColor;
 
+        [Range(0,3), ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
+        private float colorIntensity;
+
         [ConditionalField("audioDataType", SpectrumAnalyzer.AudioDataReturnType.CustomBands), SerializeField]
         private float radius;
 
@@ -139,7 +142,7 @@ namespace UnityEngine.Visualizers
             {
                 Transform newCube = Instantiate(defaultSpectrumPrefab);
                 Material cubeMaterial = newCube.GetComponent<Renderer>().material;
-                cubeMaterial.SetColor("_EmissionColor", spectrumColor);
+                cubeMaterial.SetColor("_EmissionColor", spectrumColor * colorIntensity);
                 newCube.name = "Spectrum " + i;
                 newCube.transform.SetParent(gameObject.transform, true);
                 newCube.transform.localScale = spectrumNodeScale;

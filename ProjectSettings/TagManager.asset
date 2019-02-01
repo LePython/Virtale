@@ -24,7 +24,7 @@ TagManager:
   - FogVolumeUniform
   - ReflectionsIgnore
   - StereoRender_Ignore
-  - 
+  - PointLightUI
   - 
   - 
   - 
