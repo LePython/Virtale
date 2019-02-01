@@ -92,7 +92,6 @@ namespace UnityEngine.Visualizers
                 // Set particle velocity based on low frequency average
                 particleVelocity.speedModifierMultiplier = scaleFactor;
 
-                Debug.Log((scaleFactor - 1f)/particleSpeed);
                 // Set particle color brightness based on lower frequencies
                 Color fColor = colorBySpeed.Evaluate((scaleFactor - 1f)/particleSpeed);
                 pSystemRenderer.material.SetColor("_TintColor", fColor);
