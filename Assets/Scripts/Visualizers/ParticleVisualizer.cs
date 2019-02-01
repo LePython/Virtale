@@ -22,6 +22,7 @@ namespace UnityEngine.Visualizers
         // Dust Particle System and it's features
         private ParticleSystem pSystem;
         private ParticleSystem.MainModule pSystemMainSettings;
+        private ParticleSystemRenderer pSystemRenderer;
 
         [SerializeField]
         private ParticleVisualizationType particleVisualizationType;
@@ -30,8 +31,7 @@ namespace UnityEngine.Visualizers
         private int particleSpeed = 3;
 
         [SerializeField]
-        private Color particleSystemColor;
-
+        private Gradient colorBySpeed;
 
         [SerializeField]
         private SpectrumAnalyzer spectrumAnalyzer;
@@ -47,6 +47,7 @@ namespace UnityEngine.Visualizers
         {
             pSystem = GetComponent<ParticleSystem>();
             pSystemMainSettings = pSystem.main;
+            pSystemRenderer = GetComponent<ParticleSystemRenderer>();
 
             if(!spectrumAnalyzer)
             {
@@ -56,7 +57,7 @@ namespace UnityEngine.Visualizers
             }
         }
 
-        private void Start()
+        private void OnEnable()
         {
             StartVisualizerCoroutine();
         }
@@ -66,6 +67,7 @@ namespace UnityEngine.Visualizers
         #region Private Methods
         private void StartVisualizerCoroutine()
         {
+            Debug.Log(pSystemRenderer.name);
             switch(particleVisualizationType)
             {
                 case ParticleVisualizationType.SimulationSpeed:
@@ -80,22 +82,25 @@ namespace UnityEngine.Visualizers
         }
         private IEnumerator VisualizeByVelocity()
         {
+            ParticleSystem.VelocityOverLifetimeModule particleVelocity = pSystem.velocityOverLifetime;
+
             while (AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Play)
             {
                 float[] lowRangeArray = spectrumAnalyzer.GetSpectrum(spectrumDataType);
                 float scaleFactor = 1f + 10 * particleSpeed * (SpectrumAnalyzer.GetArrayAverage(lowRangeArray));
                 
                 // Set particle velocity based on low frequency average
-                ParticleSystem.VelocityOverLifetimeModule particleVelocity = pSystem.velocityOverLifetime;
                 particleVelocity.speedModifierMultiplier = scaleFactor;
 
+                Debug.Log((scaleFactor - 1f)/particleSpeed);
                 // Set particle color brightness based on lower frequencies
-                Color finalColor = particleSystemColor * pSystemMainSettings.simulationSpeed;
-                //dustParticleMaterial.SetColor("_Color", finalColor);
+                Color fColor = colorBySpeed.Evaluate((scaleFactor - 1f)/particleSpeed);
+                pSystemRenderer.material.SetColor("_TintColor", fColor);
+
                 yield return null;
             }
-            // If song isn't playing, set simulation speed to default
-            pSystemMainSettings.simulationSpeed = 1;
+            // If song isn't playing, set speed to default
+            particleVelocity.speedModifierMultiplier = 1f;
 
             while(AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Pause)
             {
@@ -116,8 +121,10 @@ namespace UnityEngine.Visualizers
                 pSystemMainSettings.simulationSpeed = Mathf.Lerp(pSystemMainSettings.simulationSpeed,scaleFactor, 0.15f);
 
                 // Set particle color brightness based on lower frequencies
-                Color finalColor = particleSystemColor * pSystemMainSettings.simulationSpeed;
-                //dustParticleMaterial.SetColor("_Color", finalColor);
+                Color finalColor = colorBySpeed.Evaluate((pSystemMainSettings.simulationSpeed-1f)/particleSpeed);
+                pSystemRenderer.material.SetColor("_TintColor", finalColor);
+
+
                 yield return null;
             }
             // If song isn't playing, set simulation speed to default
