@@ -125,6 +125,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Leap Rig Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 871204633047437739, guid: c775c51dc4092954985c4b8c1d4783c0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 872991617266629669, guid: c775c51dc4092954985c4b8c1d4783c0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -26652,7 +26657,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &842076178
 Transform:
   m_ObjectHideFlags: 0
@@ -42646,7 +42651,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1178792442
 Transform:
   m_ObjectHideFlags: 0
@@ -53902,7 +53907,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1780947807}
-  - component: {fileID: 1780947808}
   m_Layer: 0
   m_Name: '[CONTENT]'
   m_TagString: Untagged
@@ -53929,18 +53933,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1780947808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1780947806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd25e1d96f8608e4ebeab9c0b4242cc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1789304967
 GameObject:
   m_ObjectHideFlags: 0
