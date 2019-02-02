@@ -125,26 +125,37 @@ namespace UnityEngine.AudioManager
         }
         private IEnumerator LoadAudio(string audioFilePath)
         {
+            AudioToPlay = null;
+            Resources.UnloadUnusedAssets();  // YOU ARE FUCKING KIODDNGF ME?!!!! BECAUSE OF THIS SHIT I SPENT HOURS WHAT THE FUCK IS WRONG WITH MY CODE
+
             if(audioFilePath == null)
                 yield break;
-            
-            WWW request = GetAudioFromFile(audioFilePath);
 
-            yield return request;
+            UnityWebRequest request = GetAudioFromFile(audioFilePath);
+            request.disposeCertificateHandlerOnDispose = true;
+            request.disposeDownloadHandlerOnDispose = true;
+            request.disposeUploadHandlerOnDispose = true;
 
-            audioToPlay = request.GetAudioClip(true, true, AudioType.WAV);
+            yield return request.SendWebRequest();
+
+            audioToPlay = DownloadHandlerAudioClip.GetContent(request);
             
             audioLength = AudioToPlay.length;
             audioSource.clip = audioToPlay;
 
             // Invoke selected method when the new song is selected
             OnAudioSelected.Invoke();
+
+            request.Dispose();
+
+            yield break;
         }
-        private WWW GetAudioFromFile(string path)
+        private UnityWebRequest GetAudioFromFile(string path)
         {
-            WWW request = new WWW(path);
+            UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.WAV);
             return request;
         }
+
         #endregion
 
     }

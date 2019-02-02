@@ -82,6 +82,7 @@ namespace UnityEngine.AudioManager
                 }
             }
         }
+        WaitForSeconds wait2Secs = new WaitForSeconds(.2f);
         IEnumerator WaitForSongEnd()
         {
             // die Lieddauer in Minuten und Sekunden umwandeln
@@ -105,7 +106,7 @@ namespace UnityEngine.AudioManager
 
                 currentTimeTextMesh.text = min + ":" + secunds + "/" + minLength + ":" + secLengthS;
 
-                yield return new WaitForSeconds(.2f);
+                yield return wait2Secs;
             }
             OnSongEnd.Invoke();
             yield break;

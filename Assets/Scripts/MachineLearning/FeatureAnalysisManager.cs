@@ -69,6 +69,7 @@ namespace UnityEngine.ML
             //Debug.Log(output);
         }
         #endregion
+        WaitForSeconds wait1 = new WaitForSeconds(.1f);
         /// <summary>
         /// Wait till the the worker thread is done processing
         /// When its done, stop the thread and execute OnCategorizeFinished method
@@ -82,7 +83,7 @@ namespace UnityEngine.ML
                 Debug.Log("Categorizing...");
     #endif
 
-                yield return new WaitForSeconds(.1f);
+                yield return wait1;
             }
 
             kmeansModel.IsProcessingDone = false;

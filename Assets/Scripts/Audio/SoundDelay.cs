@@ -10,11 +10,11 @@ public class SoundDelay : MonoBehaviour
 
     [SerializeField]
     private float delay;
-
+    private WaitForSeconds waitDelay;
     private AudioSource audioSource;
     private IEnumerator delayPlay()
     {
-        yield return new WaitForSeconds(delay);
+        yield return waitDelay;
         audioSource.Play();
         
         while((audioSource.clip.length + delay) > Time.time)
@@ -33,6 +33,7 @@ public class SoundDelay : MonoBehaviour
             enabled = false;
         }
         audioSource.playOnAwake = false;
+        waitDelay = new WaitForSeconds(delay);
     }
     // Start is called before the first frame update
     void Start()
