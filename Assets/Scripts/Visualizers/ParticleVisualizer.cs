@@ -16,8 +16,13 @@ namespace UnityEngine.Visualizers
             VelocityOverTime
         }
 
+        public enum ColorValues
+        {
+            R,G,B,A
+        }
         #region Private Variables
 
+        private ColorValues colorValues;
         // TODO Create additional class to this and to spectrum analyzer, inherit from ParticleSystem
         // Dust Particle System and it's features
         private ParticleSystem pSystem;
@@ -89,12 +94,21 @@ namespace UnityEngine.Visualizers
                 float[] lowRangeArray = spectrumAnalyzer.GetSpectrum(spectrumDataType);
                 float scaleFactor = 1f + 10 * particleSpeed * (SpectrumAnalyzer.GetArrayAverage(lowRangeArray));
                 
+                float oldScaleFactor = particleVelocity.speedModifierMultiplier;
+
+                float finalScaleFactor = Mathf.Lerp(oldScaleFactor, scaleFactor, 0.2f);
                 // Set particle velocity based on low frequency average
-                particleVelocity.speedModifierMultiplier = scaleFactor;
+                particleVelocity.speedModifierMultiplier = finalScaleFactor;
+
+                // Get the color from the last frame or iteration
+                Color originalColor = pSystemRenderer.material.GetColor("_TintColor");
 
                 // Set particle color brightness based on lower frequencies
-                Color fColor = colorBySpeed.Evaluate((scaleFactor - 1f)/particleSpeed);
-                pSystemRenderer.material.SetColor("_TintColor", fColor);
+                Color newColor = colorBySpeed.Evaluate((scaleFactor - 1f)/particleSpeed);
+
+                Color finalColor = Color.Lerp(originalColor, newColor, 0.2f);
+
+                pSystemRenderer.material.SetColor("_TintColor", finalColor);
 
                 yield return null;
             }
