@@ -85,6 +85,7 @@ namespace UnityEngine.Visualizers
                     break;
             }
         }
+        WaitForSeconds visualizeDelay = new WaitForSeconds(0.1f);
         private IEnumerator VisualizeByVelocity()
         {
             ParticleSystem.VelocityOverLifetimeModule particleVelocity = pSystem.velocityOverLifetime;
@@ -93,24 +94,17 @@ namespace UnityEngine.Visualizers
             {
                 float[] lowRangeArray = spectrumAnalyzer.GetSpectrum(spectrumDataType);
                 float scaleFactor = 1f + 10 * particleSpeed * (SpectrumAnalyzer.GetArrayAverage(lowRangeArray));
-                
-                float oldScaleFactor = particleVelocity.speedModifierMultiplier;
 
-                float finalScaleFactor = Mathf.Lerp(oldScaleFactor, scaleFactor, 0.2f);
                 // Set particle velocity based on low frequency average
-                particleVelocity.speedModifierMultiplier = finalScaleFactor;
+                particleVelocity.speedModifierMultiplier = scaleFactor;
 
-                // Get the color from the last frame or iteration
-                Color originalColor = pSystemRenderer.material.GetColor("_TintColor");
 
                 // Set particle color brightness based on lower frequencies
                 Color newColor = colorBySpeed.Evaluate((scaleFactor - 1f)/particleSpeed);
 
-                Color finalColor = Color.Lerp(originalColor, newColor, 0.2f);
+                pSystemRenderer.material.SetColor("_TintColor", newColor);
 
-                pSystemRenderer.material.SetColor("_TintColor", finalColor);
-
-                yield return null;
+                yield return visualizeDelay;
             }
             // If song isn't playing, set speed to default
             particleVelocity.speedModifierMultiplier = 1f;
