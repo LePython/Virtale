@@ -231,14 +231,7 @@ namespace UnityEngine.AudioManager
         {
             if(Input.GetKeyDown(KeyCode.P))
             {
-                if (musicPlaybackState == PlaybackState.Pause)
-                {
-                    PlayAudio();
-                }
-                else
-                {
-                    PauseAudio();
-                }
+                PauseEventDecision();
             }
             // Home button to select the next song in the playlist
             if (Input.GetKeyDown(KeyCode.N))
@@ -251,7 +244,19 @@ namespace UnityEngine.AudioManager
             }
         }
         #endregion
+
+        // Decide if pause or play the song 
+        public void PauseEventDecision()
+        {
+            if (musicPlaybackState == PlaybackState.Pause)
+            {
+                PlayAudio();
+            }
+            else
+            {
+                PauseAudio();
+            }
+        }
+
     }
-
-
 }
