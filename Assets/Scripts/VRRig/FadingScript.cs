@@ -7,8 +7,13 @@ using UnityEngine.SceneManagement;
 public class FadingScript : MonoBehaviour
 {
     [SerializeField]
-    private UnityEvent OnFadeInFinished;
+    private UnityEvent OnFadeOutNextSongEvent;
+
+    [SerializeField]
+    private UnityEvent OnFadeOutLastSongEvent;
     private Animator animator;
+
+    private bool fadeInProgress = false;
 
     private void Awake()
     {
@@ -21,13 +26,24 @@ public class FadingScript : MonoBehaviour
     // If you want to fade in, set the bool to true. False otherwise.
     public void SetFadeState(bool fadein)
     {
-        animator.SetBool("FadeIn", fadein);
-        if(fadein == true)
-            Invoke("InvokeOnFadeInEnd", 1f);
+        if(fadeInProgress == false)
+        {
+            fadeInProgress = true;
+            animator.SetBool("FadeIn", fadein);
+            Invoke("SetFadeProgressToFalse", 1f);
+            if(!fadein)
+            {
+                Invoke("DisableFade", 1f);
+            }
+        }
     }
-    private void InvokeOnFadeInEnd()
+    private void DisableFade()
     {
-        OnFadeInFinished.Invoke();
+        gameObject.SetActive(false);
+    }
+    private void SetFadeProgressToFalse()
+    {
+        fadeInProgress = false;
     }
     public void LoadScene(int sceneNumber)
     {
@@ -41,5 +57,25 @@ public class FadingScript : MonoBehaviour
         {
             yield return null;
         }
+
+        yield break;
+    }
+
+
+    public void FadeOutNextSong()
+    {
+        Invoke("FadeOutNextSongInv", 1f);
+    }
+    public void FadeOutLastSong()
+    {
+        Invoke("FadeOutLastSongInv", 1f);
+    }
+    private void FadeOutNextSongInv()
+    {
+        OnFadeOutNextSongEvent.Invoke();
+    }
+    private void FadeOutLastSongInv()
+    {
+        OnFadeOutLastSongEvent.Invoke();
     }
 }

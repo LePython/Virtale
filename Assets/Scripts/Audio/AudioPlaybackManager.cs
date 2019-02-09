@@ -132,12 +132,6 @@ namespace UnityEngine.AudioManager
             SelectSong(songNumber);
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            ManageInput();
-        }
-
         #endregion
 
         #region Privately Defined Methods
@@ -218,31 +212,6 @@ namespace UnityEngine.AudioManager
         public static int SongNumber { get => songNumber; set => songNumber = value; }
 
 
-        #endregion
-
-        #region Event Handlers
-        /// <summary>
-        /// If Bumper button is pressed, change playback state
-        /// to either play or pause.
-        /// </summary>
-        /// <param name="controller_id"></param>
-        /// <param name="buttonPressed"></param>
-        private void ManageInput()
-        {
-            if(Input.GetKeyDown(KeyCode.P))
-            {
-                PauseEventDecision();
-            }
-            // Home button to select the next song in the playlist
-            if (Input.GetKeyDown(KeyCode.N))
-            {
-                if(songNumber >= musicList.SongPlaylist.Count)
-                {
-                    songNumber = 0;
-                }
-                NextSong();
-            }
-        }
         #endregion
 
         // Decide if pause or play the song 
