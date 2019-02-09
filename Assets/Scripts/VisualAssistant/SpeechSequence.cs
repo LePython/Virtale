@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AudioManager;
 using TMPro;
+using UnityEngine.Events;
 
 /// <summary>
 /// Transcript structure is going to be used to manage audio, displayed text and delay each time
@@ -33,6 +34,9 @@ public class SpeechSequence : MonoBehaviour
 {
 
     [SerializeField]
+    private UnityEvent OnVisualAssistantEnd;
+    
+    [SerializeField]
     private AudioHandler audioHandler;
 
     [SerializeField]
@@ -57,12 +61,25 @@ public class SpeechSequence : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        StartCoroutine("WaitForTransitionToApp");
         transcriptList = new List<Transcript>();
-        transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen auf Virtale in VR", 2.0f));
-        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen, strecken Sie Ihre linke Hand aus", 1.0f));
-        transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um das Menü zu öffnen, berühren Sie mit Ihrer rechten Hand die Handinnenfläche Ihrer linken Hand", 2.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen in VirtaleVR", 2.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen, strecken Sie Ihre linke Hand vor Ihrem Gesicht aus", 3.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um ein Lied abzuspielen, drücken sie im Wiedergabefenster auf den Wiedergabeknopf", 3.0f));
         audioHandler.StreamAudio(transcriptList[transcriptListIndex].transcriptPath);
         transcriptText.text = transcriptList[transcriptListIndex].transcriptText;
+    }
+
+    private IEnumerator WaitForTransitionToApp()
+    {
+        while(AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Pause)
+        {
+            yield return null;
+        }
+
+        OnVisualAssistantEnd.Invoke();
+
+        yield break;
     }
     /// <summary>
     /// The next Transcript gets prepared for streaming by invoking a method from UnityEvents in Inspector
