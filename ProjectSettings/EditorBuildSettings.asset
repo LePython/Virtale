@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Werbung.unity
+    guid: 192c9330754638a41a666058f27c1450
+  - enabled: 1
     path: Assets/Scenes/Logo.unity
     guid: 39c2c88662a00c743b15fa5303a59662
   - enabled: 1

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-
 public class FadingScript : MonoBehaviour
 {
     [SerializeField]
@@ -14,6 +13,7 @@ public class FadingScript : MonoBehaviour
     private Animator animator;
 
     private bool fadeInProgress = false;
+
 
     private void Awake()
     {
@@ -35,11 +35,19 @@ public class FadingScript : MonoBehaviour
             {
                 Invoke("DisableFade", 1f);
             }
+            else
+            {
+                Invoke("EnableFade", 1f);
+            }
         }
     }
     private void DisableFade()
     {
         gameObject.SetActive(false);
+    }
+    private void EnableFade()
+    {
+        gameObject.SetActive(true);
     }
     private void SetFadeProgressToFalse()
     {
