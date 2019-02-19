@@ -161,13 +161,19 @@ namespace UnityEngine.AudioManager
         }
         public void NextSong()
         {
-            Instance.SelectSong(++songNumber);
-            OnPlaybackStateChanged.Invoke();
+            if(SongNumber<musicList.SongPlaylist.Count)
+            {
+                Instance.SelectSong(++songNumber);
+                OnPlaybackStateChanged.Invoke();
+            }
         }
         public void LastSong()
         {
-            Instance.SelectSong(--songNumber);
-            OnPlaybackStateChanged.Invoke();
+            if(SongNumber>0)
+            {
+                Instance.SelectSong(--songNumber);
+                OnPlaybackStateChanged.Invoke();
+            }
         }
 
         public void StartWaitingOnEnd()
