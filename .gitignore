@@ -8,7 +8,7 @@ Assets/InstalledPackages/*
 Assets/StreamingAssets/Tutorial/*
 Assets/StreamingAssets/AudioFiles/*
 Music Feature Extraction/audio_files/*
-Music Feature Extraction/YoutubeDownload/audio_files/*
+Server/audio_files/*
 
 # Visual Studio cache directory
 .vs/
