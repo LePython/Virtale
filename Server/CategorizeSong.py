@@ -28,7 +28,7 @@ analyzedDataListNames = []
 with open(os.path.normpath(dir_path + "/AnalyzedFeaturesList.json")) as aFile:
     loadedData = json.load(aFile)
     for p in loadedData:
-        analyzedDataListNames.append(p["Name"])
+        analyzedDataListNames.append(p["name"])
 
 # Check if existing files have been analyzed
 def IsAnalysisRequired():
@@ -101,8 +101,8 @@ for index, f in enumerate(tqdm(songsList)):
 
 
     featureDic = {
-        "Name" : audioName,
-        "FeatureGroup" : int(result)
+        "name" : audioName,
+        "featuregroup" : int(result)
     }
     analyzedFeatureList.append(featureDic)
 
@@ -116,3 +116,6 @@ finalList = data + analyzedFeatureList
 # Open the json file and rewrite its content to update the list
 with open(os.path.normpath(dir_path + "/AnalyzedFeaturesList.json"), "w") as f:
     json.dump(finalList, f, indent=4)
+
+with open(os.path.normpath(dir_path + "/configs/NewFeatures.json"),"w") as f:
+    json.dump(analyzedFeatureList,f)
