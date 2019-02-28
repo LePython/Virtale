@@ -25,9 +25,6 @@ def download_wav(song_url, format):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([song_url])
 
-        info_dict = ydl.extract_info(song_url, download=False)
-        return os.path.normpath(dir_path + "/audio_files/" + info_dict.get('title', None) + "." + format)
-
 
 # opening the task file
 with open(os.path.normpath(dir_path + "/configs/task.json")) as aFile:
@@ -36,52 +33,21 @@ with open(os.path.normpath(dir_path + "/configs/task.json")) as aFile:
     if task["stage"] == 'download':
         print("starting download")
         try:
-            file = download_wav(task["url"],task["format"])   
+            download_wav(task["url"],task["format"])   
         except Exception as e:
             print("The url is invalid. Please enter a valind url!", e)
-        else:  
-            next_file = { 
-                "stage" : "analysis"
-            }
+        else:
 
             try:
-                # openening task file to check if not overwriting something
-                print("checking for running analysis")
-                while next_file["stage"] != 'finished':
-                    time.sleep(1)
-                    f = open(os.path.normpath(dir_path + "/configs/task1.json"), "r")
-                    next_file = json.load(f)
-
+                # overwriting current taskfile
+                print("updating current task")
+                task["stage"] = 'finished'
+                f = open(os.path.normpath(dir_path + "/configs/task.json"), "w")
+                f.write(json.dumps(task))
             except Exception as e:
-                print("Something went wrong", e)
-
+                print("Something went wrong", e)    
             else:
-
-                try:
-                    # overwriting current taskfile
-                    print("updating current task")
-                    task["stage"] = 'finished'
-                    f = open(os.path.normpath(dir_path + "/configs/task.json"), "w")
-                    f.write(json.dumps(task))
-                except Exception as e:
-                    print("Something went wrong", e)    
-
-                else:
-
-                    try:
-                        # updating properties of json file
-                        task["stage"] = 'analysis'
-                        task["location"] = str(file)
-
-                        # writing to new properties file for next step
-                        print("updating next task")
-                        f = open(os.path.normpath(dir_path + "/configs/task1.json"), "w")
-                        f.write(json.dumps(task))
-
-                    except Exception as e:
-                        print("Something went wrong", e) 
-                    else:
-                        print("finished without errors")
+                print("finished without errors")
                         
     else:
         print("invalid type!")
