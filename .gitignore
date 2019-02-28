@@ -9,6 +9,7 @@ Assets/StreamingAssets/Tutorial/*
 Assets/StreamingAssets/AudioFiles/*
 Music Feature Extraction/audio_files/*
 Server/audio_files/*
+Server/configs/*
 
 # Visual Studio cache directory
 .vs/
@@ -39,3 +40,6 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+main.out
+main.exe
+main
