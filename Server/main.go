@@ -141,7 +141,7 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 	var f []feature
 
 	json.Unmarshal(data[0:count], &f)
-	log.Printf("New Feature: %+v", f)
+	log.Printf("New Feature: %+v", f[0])
 
 	//prepare response
 	var resp response
