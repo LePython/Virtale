@@ -10,7 +10,7 @@ namespace UnityEngine.AudioManager
     internal class AudioPlaybackManager : MonoBehaviour, IMusicPlayer
     {
 
-        public static AudioPlaybackManager Instance;
+        public AudioPlaybackManager Instance;
 
         // Playback states enumerator
         public enum PlaybackState { Play, Pause };
@@ -45,8 +45,6 @@ namespace UnityEngine.AudioManager
 
         private static int songNumber = 0;
 
-        // Time when the music is paused is saved in this variable
-        private static float musicPausedTime;
 
         #endregion
 
@@ -148,7 +146,6 @@ namespace UnityEngine.AudioManager
         {
             musicPlaybackState = PlaybackState.Pause;
             AudioVolume        = 0f;   // Song pauses itself if audio volume is 0
-            MusicPausedTime    = Time.time;
             OnPlaybackStateChanged.Invoke();
         }
         // Set the volume to 1 and start playing the music
@@ -198,19 +195,6 @@ namespace UnityEngine.AudioManager
             set
             {
                 StartCoroutine(DecayAudio(value));
-            }
-        }
-
-        public static float MusicPausedTime
-        {
-            get
-            {
-                return musicPausedTime;
-            }
-
-            set
-            {
-                musicPausedTime = value;
             }
         }
 
