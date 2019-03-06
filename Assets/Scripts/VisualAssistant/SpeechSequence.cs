@@ -45,7 +45,7 @@ public class SpeechSequence : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI transcriptText;
 
-    private static int transcriptListIndex = 0;
+    private int transcriptListIndex = 0;
 
     private void Awake() {
         if(!audioHandler)
