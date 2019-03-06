@@ -1,6 +1,6 @@
 matplotlib==3.0.2
 librosa==0.6.3
-youtube_dl==2019.2.18
+youtube_dl>=2019.2.18
 pydub==0.23.1
 pandas==0.24.1
 numpy==1.16.2
