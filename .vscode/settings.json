@@ -3,7 +3,7 @@
     {
         "**/.DS_Store":true,
         "**/.git":true,
-        "**/.gitignore":true,
+        "**/.gitignore":false,
         "**/.gitmodules":true,
         "**/*.booproj":true,
         "**/*.pidb":true,
@@ -54,5 +54,6 @@
         "Temp/":true
     },
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "python.pythonPath": "/usr/bin/python3"
 }
