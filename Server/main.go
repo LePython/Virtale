@@ -24,7 +24,7 @@ type request struct {
 type response struct {
 	Url          string `json:"url"`
 	Name         string `json:"name"`
-	Featuregroup string `json:"featuregroup"`
+	Featuregroup int    `json:"featuregroup"`
 }
 
 type task struct {
@@ -35,7 +35,7 @@ type task struct {
 
 type feature struct {
 	Name         string `json:"name"`
-	Featuregroup string `json:"featuregroup"`
+	Featuregroup int    `json:"featuregroup"`
 }
 
 func main() {
@@ -119,11 +119,17 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 
 	// Run Download
 	log.Printf("starting dowload script")
-	exec.Command("python3", "Download.py").Run()
+	dl := exec.Command("python3", "Download.py")
+	dl.Stdout = os.Stdout
+	dl.Stderr = os.Stderr
+	_ = dl.Run()
 
 	// Run Categorization
 	log.Printf("starting cateogorization script")
-	exec.Command("python3", "CategorizeSong.py").Run()
+	ana := exec.Command("python3", "CategorizeSong.py")
+	ana.Stdout = os.Stdout
+	ana.Stderr = os.Stderr
+	_ = ana.Run()
 
 	// Import NewFeatures.json
 	file, err := os.Open("configs/NewFeatures.json") // For read access.
