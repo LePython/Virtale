@@ -119,14 +119,14 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 
 	// Run Download
 	log.Printf("starting dowload script")
-	dl := exec.Command("python3", "Download.py")
+	dl := exec.Command("python3", "scripts/Download.py")
 	dl.Stdout = os.Stdout
 	dl.Stderr = os.Stderr
 	_ = dl.Run()
 
 	// Run Categorization
 	log.Printf("starting cateogorization script")
-	ana := exec.Command("python3", "CategorizeSong.py")
+	ana := exec.Command("python3", "scripts/CategorizeSong.py")
 	ana.Stdout = os.Stdout
 	ana.Stderr = os.Stderr
 	_ = ana.Run()

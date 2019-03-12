@@ -10,7 +10,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def download_wav(song_url, format):
 
-    outtmpl = os.path.normpath(dir_path + "/audio_files/%(title)s.%(ext)s")
+    outtmpl = os.path.normpath(dir_path + "/../audio_files/%(title)s.%(ext)s")
     print(outtmpl)
     ydl_opts = {
         "format": "bestaudio/best",
@@ -27,7 +27,7 @@ def download_wav(song_url, format):
 
 
 # opening the task file
-with open(os.path.normpath(dir_path + "/configs/task.json")) as aFile:
+with open(os.path.normpath(dir_path + "/../configs/task.json")) as aFile:
     task = json.load(aFile)
     print(task)
     if task["stage"] == 'download':
@@ -42,7 +42,7 @@ with open(os.path.normpath(dir_path + "/configs/task.json")) as aFile:
                 # overwriting current taskfile
                 print("updating current task")
                 task["stage"] = 'finished'
-                f = open(os.path.normpath(dir_path + "/configs/task.json"), "w")
+                f = open(os.path.normpath(dir_path + "/../configs/task.json"), "w")
                 f.write(json.dumps(task))
             except Exception as e:
                 print("Something went wrong", e)    

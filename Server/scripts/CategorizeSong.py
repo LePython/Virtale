@@ -16,7 +16,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 existingSongsNames = []
 
 # Get all wav files from that folder and store them in a list
-songsList = glob.glob(os.path.normpath(dir_path + "/audio_files/*.wav"))
+songsList = glob.glob(os.path.normpath(dir_path + "/../audio_files/*.wav"))
 for i in songsList:
     existingSongsNames.append(os.path.basename(i))
 
@@ -25,7 +25,7 @@ for i in songsList:
 analyzedDataListNames = []
 
 # Open json file to get already analyzed files
-with open(os.path.normpath(dir_path + "/AnalyzedFeaturesList.json"),"r") as aFile:
+with open(os.path.normpath(dir_path + "/../configs/AnalyzedFeaturesList.json"),"r") as aFile:
     loadedData = json.load(aFile)
     for p in loadedData:
         analyzedDataListNames.append(p["name"])
@@ -87,7 +87,7 @@ for index, f in enumerate(tqdm(songsList)):
     ### of the audio file
 
 
-    pkl_filename = os.path.normpath(dir_path + "/kmeans_final_model.pkl")
+    pkl_filename = os.path.normpath(dir_path + "/../configs/kmeans_final_model.pkl")
 
     with open(pkl_filename, 'rb') as file:  
         pickle_model = pickle.load(file)
@@ -107,15 +107,15 @@ for index, f in enumerate(tqdm(songsList)):
     analyzedFeatureList.append(featureDic)
 
 # Open the json file and copy its content
-with open(os.path.normpath(dir_path + "/AnalyzedFeaturesList.json"),"r") as f:
+with open(os.path.normpath(dir_path + "/../configs/AnalyzedFeaturesList.json"),"r") as f:
     data = json.load(f)
 
 # Add new analyzed songs into the list of previously analyzed ones
 finalList = data + analyzedFeatureList
 
 # Open the json file and rewrite its content to update the list
-with open(os.path.normpath(dir_path + "/AnalyzedFeaturesList.json"), "w+") as f:
+with open(os.path.normpath(dir_path + "/../configs/AnalyzedFeaturesList.json"), "w+") as f:
     json.dump(finalList, f, indent=4)
 
-with open(os.path.normpath(dir_path + "/configs/NewFeatures.json"),"w+") as f:
+with open(os.path.normpath(dir_path + "/../configs/NewFeatures.json"),"w+") as f:
     json.dump(analyzedFeatureList,f)
