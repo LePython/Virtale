@@ -9,7 +9,7 @@ Assets/StreamingAssets/Tutorial/*
 Assets/StreamingAssets/AudioFiles/*
 Music Feature Extraction/audio_files/*
 Server/audio_files/*
-Server/configs/*
+Server/configs/task.json
 
 # Visual Studio cache directory
 .vs/
