@@ -1,4 +1,4 @@
-# What is VirtaleVR?
+# What is "Name of the collaboration project"?
 VirtaleVR is a virtual reality program built on top of the Machine Learning algorithm K-Means-Clustering. The ML algorithm analyses the given song and puts it into the similar group to the other analyzed songs. This way you can group any song with mathematical similarities together. It is not the same as grouping the songs with the same genre together!
 
  The intention behind this project is to combine Machine Learning with new technologies alike (VR in this case). Since most projects on the internet are focused on the ML models and their training, this project is intended to show both the model and its implementation in a Unity project.
