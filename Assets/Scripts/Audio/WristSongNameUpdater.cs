@@ -24,12 +24,6 @@ public class WristSongNameUpdater : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        textMesh.text = audioManager.MusicList.SongPlaylist[AudioPlaybackManager.SongNumber].songName;
-    }
-
     public void UpdateTextMesh()
     {
         if(gameObject.activeSelf)
