@@ -4,7 +4,6 @@
 [Bb]uild/
 [Bb]uilds/
 Assets/AssetStoreTools*
-Assets/InstalledPackages/*
 Assets/StreamingAssets/Tutorial/*
 Assets/StreamingAssets/AudioFiles/*
 Music Feature Extraction/audio_files/*

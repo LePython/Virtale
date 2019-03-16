@@ -7,10 +7,10 @@ using TMPro;
 namespace UnityEngine.AudioManager
 {
     [RequireComponent(typeof(AudioHandler)), System.Serializable]
-    internal class AudioPlaybackManager : MonoBehaviour, IMusicPlayer
+    public class AudioPlaybackManager : MonoBehaviour, IMusicPlayer
     {
 
-        public AudioPlaybackManager Instance;
+        private AudioPlaybackManager Instance;
 
         // Playback states enumerator
         public enum PlaybackState { Play, Pause };
