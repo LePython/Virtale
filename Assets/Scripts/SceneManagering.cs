@@ -35,6 +35,5 @@ public class SceneManagering : MonoBehaviour
     {
         UnityEngine.AudioManager.AudioPlaybackManager.musicPlaybackState = UnityEngine.AudioManager.AudioPlaybackManager.PlaybackState.Pause;
         UnityEngine.AudioManager.AudioPlaybackManager.SongNumber = 0;
-        Debug.Log("ss");
     }
 }

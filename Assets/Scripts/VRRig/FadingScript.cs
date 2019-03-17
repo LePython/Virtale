@@ -10,6 +10,7 @@ public class FadingScript : MonoBehaviour
 
     [SerializeField]
     private UnityEvent OnFadeOutLastSongEvent;
+
     private Animator animator;
 
     private bool fadeInProgress = false;
@@ -19,10 +20,12 @@ public class FadingScript : MonoBehaviour
     {
         animator = GetComponent<Animator>();
     }
+
     private void Start()
     {
         SetFadeState(false);
     }
+    
     // If you want to fade in, set the bool to true. False otherwise.
     public void SetFadeState(bool fadein)
     {
