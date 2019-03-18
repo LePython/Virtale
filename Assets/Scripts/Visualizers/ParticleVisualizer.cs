@@ -72,7 +72,6 @@ namespace UnityEngine.Visualizers
         #region Private Methods
         private void StartVisualizerCoroutine()
         {
-            Debug.Log(pSystemRenderer.name);
             switch(particleVisualizationType)
             {
                 case ParticleVisualizationType.SimulationSpeed:

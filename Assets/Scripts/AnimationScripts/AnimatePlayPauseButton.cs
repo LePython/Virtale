@@ -13,7 +13,7 @@ public class AnimatePlayPauseButton : MonoBehaviour
         playbackButtonAnimator = GetComponent<Animator>();
     }
 
-    private void CheckState()
+    public void CheckState()
     {
         if(AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Play)
         {

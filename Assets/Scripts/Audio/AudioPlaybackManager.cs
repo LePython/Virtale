@@ -35,7 +35,7 @@ namespace UnityEngine.AudioManager
 
         #region Public Variables
 
-        public static PlaybackState musicPlaybackState = PlaybackState.Pause;
+        public static PlaybackState musicPlaybackState = PlaybackState.Play;
 
         #endregion
 
