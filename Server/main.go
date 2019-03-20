@@ -71,6 +71,7 @@ func main() {
 
 		cfg := &tls.Config{
 			MinVersion:               tls.VersionTLS12,
+			MaxVersion:               tls.VersionTLS13,
 			CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP521, tls.CurveP384, tls.CurveP256},
 			PreferServerCipherSuites: true,
 			CipherSuites:             getCiphers(),
@@ -141,11 +142,17 @@ func loadPageConfigs(file string) []pageSetting {
 }
 
 func rootHandler(w http.ResponseWriter, req *http.Request) {
+
+	setSecurityHeaders(w)
+
 	//redirect to index page
 	http.Redirect(w, req, "/page/index", http.StatusSeeOther)
 }
 
 func pageHandler(w http.ResponseWriter, req *http.Request) {
+
+	setSecurityHeaders(w)
+
 	//decode URL Path
 	page := req.URL.Path[len("/page/"):]
 
@@ -190,10 +197,14 @@ func songListHandler(w http.ResponseWriter, req *http.Request) {
 
 	// Set the content type to json and send response
 	w.Header().Set("Content-Type", "application/json")
+	setSecurityHeaders(w)
 	json.NewEncoder(w).Encode(f)
 }
 
 func audioHandler(w http.ResponseWriter, req *http.Request) {
+
+	setSecurityHeaders(w)
+
 	//decode the URL Path
 	song := req.URL.Path[len("/getAudio/"):]
 
@@ -325,22 +336,35 @@ func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
 
 	//set the header and write the response
 	w.Header().Set("Content-Type", "application/json")
+	setSecurityHeaders(w)
+
 	json.NewEncoder(w).Encode(resp)
 
 }
 
 func getCiphers() []uint16 {
 	return []uint16{
+		tls.TLS_AES_256_GCM_SHA384,
+		tls.TLS_AES_128_GCM_SHA256,
+
 		tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
 		tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
 		tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
 		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 		tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
 
+		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 		tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
 		tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-
-		//tls.TLS_AES_256_GCM_SHA384,
-		//tls.TLS_AES_128_GCM_SHA256,
 	}
+}
+
+func setSecurityHeaders(w http.ResponseWriter) {
+	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Strict-Transport-Security", "max-age=63072000")
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; font-src 'self'; frame-src 'self'; img-src 'self'; script-src 'none'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none';frame-ancestors 'self'")
+	w.Header().Set("Referrer-Policy", "same-origin")
 }
