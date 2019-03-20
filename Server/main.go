@@ -41,7 +41,7 @@ type feature struct {
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", rootHandler)
+	mux.HandleFunc("/analyzeYT", analyzeYTHandler)
 	mux.HandleFunc("/getAudio", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
 
@@ -91,7 +91,7 @@ func audioHandler(w http.ResponseWriter, req *http.Request) {
 	http.ServeFile(w, req, "audio_files/"+reg.Name)
 }
 
-func rootHandler(w http.ResponseWriter, req *http.Request) {
+func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
 
 	// decode incoming request (json)
 	decoder := json.NewDecoder(req.Body)
