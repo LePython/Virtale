@@ -43,6 +43,7 @@ func main() {
 
 	mux.HandleFunc("/", rootHandler)
 	mux.HandleFunc("/getAudio", audioHandler)
+	mux.HandleFunc("/getSongList", songListHandler)
 
 	srv := &http.Server{
 		Addr:    "0.0.0.0:8080",
@@ -51,6 +52,28 @@ func main() {
 
 	log.Fatal(srv.ListenAndServe())
 
+}
+
+func songListHandler(w http.ResponseWriter, req *http.Request) {
+	// Import AnalyzedFeaturesList.json
+	file, err := os.Open("configs/AnalyzedFeaturesList.json") // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := make([]byte, 10000)
+	count, err := file.Read(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//decode json
+	var f []feature
+
+	json.Unmarshal(data[0:count], &f)
+
+	// Set the content type to json and send response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(f)
 }
 
 func audioHandler(w http.ResponseWriter, req *http.Request) {
