@@ -3,9 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - projectile
-  - FxTemporaire
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -16,15 +14,15 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - MusicBox
-  - NoAdditionalLights
-  - FogVolumeShadowCaster
-  - FogVolume
-  - FogVolumeSurrogate
-  - FogVolumeUniform
-  - ReflectionsIgnore
-  - StereoRender_Ignore
-  - PointLightUI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

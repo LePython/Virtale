@@ -29,9 +29,6 @@ namespace UnityEngine.AudioManager
 
         // Main Audio Source attached to the component
         private AudioSource audioSource;
-        // Master audio mixer
-        [SerializeField]
-        private AudioMixer masterMixer;
 
         // Current audio attached to the audio source component
         private static AudioClip audioToPlay;
@@ -50,10 +47,6 @@ namespace UnityEngine.AudioManager
                 audioSource = gameObject.AddComponent<AudioSource>();
                 return;
             }
-            if (!masterMixer)
-            {
-                Debug.LogError("There is no AudioMixer attached to Master Mixer");
-            }
         }
         private void Start()
         {
@@ -68,23 +61,6 @@ namespace UnityEngine.AudioManager
             get
             {
                 return audioSource;
-            }
-        }
-        // Master Volume of the Audio Mixer
-        [SerializeField]
-        private float MasterVolume
-        {
-            get
-            {
-                float volume = 0;
-                if (masterMixer.GetFloat("masterVolume", out volume))
-                {
-                    return volume;
-                }
-                else
-                {
-                    return 0f;
-                }
             }
         }
 
