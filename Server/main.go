@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +15,9 @@ import (
 
 type serverConfig struct {
 	Port       string `json:"port"`
+	Encryption string `json:"encryption"`
+	Cert       string `json:"cert"`
+	Key        string `json:"key"`
 	PageConfig string `json:"pageConfig"`
 }
 
@@ -63,12 +67,32 @@ func main() {
 	mux.HandleFunc("/getAudio/", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
 
-	srv := &http.Server{
-		Addr:    "0.0.0.0:8080",
-		Handler: mux,
-	}
+	if conf.Encryption == "y" {
 
-	log.Fatal(srv.ListenAndServe())
+		cfg := &tls.Config{
+			MinVersion:               tls.VersionTLS12,
+			CurvePreferences:         []tls.CurveID{tls.X25519, tls.CurveP521, tls.CurveP384, tls.CurveP256},
+			PreferServerCipherSuites: true,
+			CipherSuites:             getCiphers(),
+		}
+
+		srv := &http.Server{
+			Addr:         "0.0.0.0:" + conf.Port,
+			Handler:      mux,
+			TLSConfig:    cfg,
+			TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
+		}
+
+		log.Fatal(srv.ListenAndServeTLS("configs/"+conf.Cert, "configs/"+conf.Key))
+
+	} else {
+		srv := &http.Server{
+			Addr:    "0.0.0.0:" + conf.Port,
+			Handler: mux,
+		}
+
+		log.Fatal(srv.ListenAndServe())
+	}
 
 }
 
@@ -303,4 +327,20 @@ func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 
+}
+
+func getCiphers() []uint16 {
+	return []uint16{
+		tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+		tls.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+		tls.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+		tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+
+		tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+		tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+
+		//tls.TLS_AES_256_GCM_SHA384,
+		//tls.TLS_AES_128_GCM_SHA256,
+	}
 }
