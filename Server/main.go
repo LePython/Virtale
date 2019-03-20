@@ -44,7 +44,7 @@ func main() {
 	mux.HandleFunc("/", rootHandler)
 	mux.HandleFunc("/page/", pageHandler)
 	mux.HandleFunc("/analyzeYT", analyzeYTHandler)
-	mux.HandleFunc("/getAudio", audioHandler)
+	mux.HandleFunc("/getAudio/", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
 
 	srv := &http.Server{
@@ -57,11 +57,12 @@ func main() {
 }
 
 func rootHandler(w http.ResponseWriter, req *http.Request) {
+	//redirect to index page
 	http.Redirect(w, req, "/page/index", http.StatusSeeOther)
 }
 
 func pageHandler(w http.ResponseWriter, req *http.Request) {
-	//log.Printf("new request")
+	//decode URL Path
 	page := req.URL.Path[len("/page/"):]
 
 	ok := false
@@ -70,16 +71,19 @@ func pageHandler(w http.ResponseWriter, req *http.Request) {
 		"serverWiki",
 		"404"}
 
+	//Check if requested page is allowed
 	for i := range validFiles {
 		if page == validFiles[i] {
 			ok = true
 			break
 		}
 	}
+
 	if ok {
-		//fmt.Println(page)
+		//if it is serve it
 		http.ServeFile(w, req, "website/"+page+".html")
 	} else {
+		//if not redirect to 404
 		http.Redirect(w, req, "/page/404", http.StatusSeeOther)
 	}
 }
@@ -107,18 +111,43 @@ func songListHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func audioHandler(w http.ResponseWriter, req *http.Request) {
-	// decode incoming request (json)
-	decoder := json.NewDecoder(req.Body)
-	var reg audioRequest
-	err := decoder.Decode(&reg)
+	//decode the URL Path
+	song := req.URL.Path[len("/getAudio/"):]
+
+	ok := false
+
+	// Import AnalyzedFeaturesList.json
+	file, err := os.Open("configs/AnalyzedFeaturesList.json") // For read access.
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+	data := make([]byte, 10000)
+	count, err := file.Read(data)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	log.Printf("incoming request: %+v", reg)
+	//decode json
+	var f []feature
 
-	//send the requested audio file
-	http.ServeFile(w, req, "audio_files/"+reg.Name)
+	json.Unmarshal(data[0:count], &f)
+
+	// Check if requested song is analyzed
+	for i := range f {
+		if song == f[i].Name {
+			ok = true
+			break
+		}
+	}
+
+	if ok {
+		//send the requested audio file if existing
+		http.ServeFile(w, req, "audio_files/"+song)
+	} else {
+		//if not send 404 site
+		http.ServeFile(w, req, "website/404.html")
+	}
+
 }
 
 func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
