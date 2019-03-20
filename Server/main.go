@@ -12,6 +12,15 @@ import (
 	"time"
 )
 
+type serverConfig struct {
+	Port       string `json:"port"`
+	PageConfig string `json:"pageConfig"`
+}
+
+type pageSetting struct {
+	Name    string `json:"name"`
+	Allowed string `json:"allowed"`
+}
 type audioRequest struct {
 	Name string `json:"name"`
 }
@@ -38,7 +47,14 @@ type feature struct {
 	Featuregroup int    `json:"featuregroup"`
 }
 
+var allowedPages []pageSetting
+
 func main() {
+
+	conf := loadServerConfigs()
+
+	allowedPages = loadPageConfigs(conf.PageConfig)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", rootHandler)
@@ -56,6 +72,50 @@ func main() {
 
 }
 
+func loadServerConfigs() serverConfig {
+	// Import Configuration
+	files, err := os.Open("configs/server.conf") // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := make([]byte, 10000)
+	count, err := files.Read(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//decode json
+	var f serverConfig
+
+	json.Unmarshal(data[0:count], &f)
+
+	log.Printf("%+v", f)
+
+	return f
+}
+
+func loadPageConfigs(file string) []pageSetting {
+	// Import Configuration
+	files, err := os.Open("configs/" + file) // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := make([]byte, 10000)
+	count, err := files.Read(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//decode json
+	var f []pageSetting
+
+	json.Unmarshal(data[0:count], &f)
+
+	log.Printf("%+v", f)
+
+	return f
+}
+
 func rootHandler(w http.ResponseWriter, req *http.Request) {
 	//redirect to index page
 	http.Redirect(w, req, "/page/index", http.StatusSeeOther)
@@ -66,15 +126,14 @@ func pageHandler(w http.ResponseWriter, req *http.Request) {
 	page := req.URL.Path[len("/page/"):]
 
 	ok := false
-	validFiles := []string{
-		"index",
-		"serverWiki",
-		"404"}
 
 	//Check if requested page is allowed
-	for i := range validFiles {
-		if page == validFiles[i] {
+	for i := range allowedPages {
+		if page == allowedPages[i].Name && allowedPages[i].Allowed == "y" {
 			ok = true
+			break
+		} else if page == allowedPages[i].Name && allowedPages[i].Allowed == "n" {
+			ok = false
 			break
 		}
 	}
