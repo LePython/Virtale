@@ -41,6 +41,8 @@ type feature struct {
 func main() {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/", rootHandler)
+	mux.HandleFunc("/page/", pageHandler)
 	mux.HandleFunc("/analyzeYT", analyzeYTHandler)
 	mux.HandleFunc("/getAudio", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
@@ -52,6 +54,34 @@ func main() {
 
 	log.Fatal(srv.ListenAndServe())
 
+}
+
+func rootHandler(w http.ResponseWriter, req *http.Request) {
+	http.Redirect(w, req, "/page/index", http.StatusSeeOther)
+}
+
+func pageHandler(w http.ResponseWriter, req *http.Request) {
+	//log.Printf("new request")
+	page := req.URL.Path[len("/page/"):]
+
+	ok := false
+	validFiles := []string{
+		"index",
+		"serverWiki",
+		"404"}
+
+	for i := range validFiles {
+		if page == validFiles[i] {
+			ok = true
+			break
+		}
+	}
+	if ok {
+		//fmt.Println(page)
+		http.ServeFile(w, req, "website/"+page+".html")
+	} else {
+		http.Redirect(w, req, "/page/404", http.StatusSeeOther)
+	}
 }
 
 func songListHandler(w http.ResponseWriter, req *http.Request) {
