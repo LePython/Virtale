@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -19,23 +20,29 @@ var securityHeaders []securitySetting
 func main() {
 
 	var conf serverConfig
-	paseJSONFile("configs/server.conf", &conf)
+	parseJSONFile("configs/server.conf", &conf)
 
-	allowedPages = loadConfigs(conf.PageConfig)
-	allowedStyles = loadConfigs(conf.StylesConfig)
-	allowedScripts = loadConfigs(conf.ScriptsConfig)
+	parseJSONFile("configs/"+conf.PageConfig, &allowedPages)
+	parseJSONFile("configs/"+conf.StylesConfig, &allowedStyles)
+	parseJSONFile("configs/"+conf.ScriptsConfig, &allowedScripts)
 
-	securityHeaders = loadSecurityConfigs(conf.SecurityConfig)
+	parseJSONFile("configs/"+conf.SecurityConfig, &securityHeaders)
 
 	mux := http.NewServeMux()
 
+	//website
 	mux.HandleFunc("/", rootHandler)
 	mux.HandleFunc("/page/", pageHandler)
 	mux.HandleFunc("/style/", styleHandler)
 	mux.HandleFunc("/script/", scriptHandler)
+
+	//analysis
 	mux.HandleFunc("/analyzeYT", analyzeYTHandler)
 	mux.HandleFunc("/getAudio/", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
+
+	//maintainace
+	mux.HandleFunc("/reloadScripts", scriptReloadHandler)
 
 	if conf.Encryption == "y" {
 
@@ -67,72 +74,22 @@ func main() {
 
 }
 
-func loadServerConfigs() serverConfig {
-	// Import Configuration
-	files, err := os.Open("configs/server.conf") // For read access.
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make([]byte, 10000)
-	count, err := files.Read(data)
-	if err != nil {
-		log.Fatal(err)
-	}
+func scriptReloadHandler(w http.ResponseWriter, req *http.Request) {
 
-	//decode json
-	var f serverConfig
+	var conf serverConfig
+	parseJSONFile("configs/server.conf", &conf)
 
-	json.Unmarshal(data[0:count], &f)
+	parseJSONFile("configs/"+conf.PageConfig, &allowedPages)
+	parseJSONFile("configs/"+conf.StylesConfig, &allowedStyles)
+	parseJSONFile("configs/"+conf.ScriptsConfig, &allowedScripts)
 
-	log.Printf("%+v", f)
+	parseJSONFile("configs/"+conf.SecurityConfig, &securityHeaders)
 
-	return f
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+
+	io.WriteString(w, "Sucessfully reloaded configurations!\nToreload the certificates and the port restart the server.")
 }
-
-func loadConfigs(file string) []contentSetting {
-	// Import Configuration
-	files, err := os.Open("configs/" + file) // For read access.
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make([]byte, 10000)
-	count, err := files.Read(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//decode json
-	var f []contentSetting
-
-	json.Unmarshal(data[0:count], &f)
-
-	log.Printf("%+v", f)
-
-	return f
-}
-
-func loadSecurityConfigs(file string) []securitySetting {
-	// Import Configuration
-	files, err := os.Open("configs/" + file) // For read access.
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make([]byte, 10000)
-	count, err := files.Read(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//decode json
-	var f []securitySetting
-
-	json.Unmarshal(data[0:count], &f)
-
-	log.Printf("%+v", f)
-
-	return f
-}
-
 func getCiphers() []uint16 {
 	return []uint16{
 		tls.TLS_AES_256_GCM_SHA384,
@@ -157,7 +114,7 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	}
 }
 
-func paseJSONFile(file string, i interface{}) {
+func parseJSONFile(file string, i interface{}) {
 	// Import Configuration
 	files, err := os.Open(file) // For read access.
 	if err != nil {
