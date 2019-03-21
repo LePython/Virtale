@@ -157,21 +157,12 @@ func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
 	var f []feature
 
 	json.Unmarshal(data[0:count], &f)
-	log.Printf("New Feature: %+v", f[0])
-
-	//prepare response
-	var resp response
-
-	resp.Url = reg.Url
-	resp.Name = f[0].Name
-	resp.Featuregroup = f[0].Featuregroup
-
-	log.Printf("response: %+v", resp)
+	log.Printf("New Features: %+v", f)
 
 	//set the header and write the response
 	w.Header().Set("Content-Type", "application/json")
 	setSecurityHeaders(w)
 
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(f)
 
 }

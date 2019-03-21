@@ -32,12 +32,6 @@ type request struct {
 	Format string `json:"format"`
 }
 
-type response struct {
-	Url          string `json:"url"`
-	Name         string `json:"name"`
-	Featuregroup int    `json:"featuregroup"`
-}
-
 type task struct {
 	Stage  string `json:"stage"`
 	Url    string `json:"url"`
