@@ -1,0 +1,11 @@
+/*The stylesheet for the index File*/
+.centering{
+    align-self: center;
+    align-items: center;
+    text-align: center;
+}
+.framing{
+    align-self: center;
+    text-align: left;
+    border-style: none;
+}

@@ -3,66 +3,35 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
-	"strings"
-	"time"
 )
 
-type serverConfig struct {
-	Port       string `json:"port"`
-	Encryption string `json:"encryption"`
-	Cert       string `json:"cert"`
-	Key        string `json:"key"`
-	PageConfig string `json:"pageConfig"`
-}
+// this file contains the main server seleton and configuration loaders
 
-type pageSetting struct {
-	Name    string `json:"name"`
-	Allowed string `json:"allowed"`
-}
-type audioRequest struct {
-	Name string `json:"name"`
-}
+var allowedPages []contentSetting
+var allowedStyles []contentSetting
+var allowedScripts []contentSetting
 
-type request struct {
-	Url    string `json:"url"`
-	Format string `json:"format"`
-}
-
-type response struct {
-	Url          string `json:"url"`
-	Name         string `json:"name"`
-	Featuregroup int    `json:"featuregroup"`
-}
-
-type task struct {
-	Stage  string `json:"stage"`
-	Url    string `json:"url"`
-	Format string `json:"format"`
-}
-
-type feature struct {
-	Name         string `json:"name"`
-	Featuregroup int    `json:"featuregroup"`
-}
-
-var allowedPages []pageSetting
+var securityHeaders []securitySetting
 
 func main() {
 
 	conf := loadServerConfigs()
 
-	allowedPages = loadPageConfigs(conf.PageConfig)
+	allowedPages = loadConfigs(conf.PageConfig)
+	allowedStyles = loadConfigs(conf.StylesConfig)
+	allowedScripts = loadConfigs(conf.ScriptsConfig)
+
+	securityHeaders = loadSecurityConfigs(conf.SecurityConfig)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", rootHandler)
 	mux.HandleFunc("/page/", pageHandler)
+	mux.HandleFunc("/style/", styleHandler)
+	mux.HandleFunc("/script/", scriptHandler)
 	mux.HandleFunc("/analyzeYT", analyzeYTHandler)
 	mux.HandleFunc("/getAudio/", audioHandler)
 	mux.HandleFunc("/getSongList", songListHandler)
@@ -119,7 +88,7 @@ func loadServerConfigs() serverConfig {
 	return f
 }
 
-func loadPageConfigs(file string) []pageSetting {
+func loadConfigs(file string) []contentSetting {
 	// Import Configuration
 	files, err := os.Open("configs/" + file) // For read access.
 	if err != nil {
@@ -132,7 +101,7 @@ func loadPageConfigs(file string) []pageSetting {
 	}
 
 	//decode json
-	var f []pageSetting
+	var f []contentSetting
 
 	json.Unmarshal(data[0:count], &f)
 
@@ -141,205 +110,26 @@ func loadPageConfigs(file string) []pageSetting {
 	return f
 }
 
-func rootHandler(w http.ResponseWriter, req *http.Request) {
-
-	setSecurityHeaders(w)
-
-	//redirect to index page
-	http.Redirect(w, req, "/page/index", http.StatusSeeOther)
-}
-
-func pageHandler(w http.ResponseWriter, req *http.Request) {
-
-	setSecurityHeaders(w)
-
-	//decode URL Path
-	page := req.URL.Path[len("/page/"):]
-
-	ok := false
-
-	//Check if requested page is allowed
-	for i := range allowedPages {
-		if page == allowedPages[i].Name && allowedPages[i].Allowed == "y" {
-			ok = true
-			break
-		} else if page == allowedPages[i].Name && allowedPages[i].Allowed == "n" {
-			ok = false
-			break
-		}
-	}
-
-	if ok {
-		//if it is serve it
-		http.ServeFile(w, req, "website/"+page+".html")
-	} else {
-		//if not redirect to 404
-		http.Redirect(w, req, "/page/404", http.StatusSeeOther)
-	}
-}
-
-func songListHandler(w http.ResponseWriter, req *http.Request) {
-	// Import AnalyzedFeaturesList.json
-	file, err := os.Open("configs/AnalyzedFeaturesList.json") // For read access.
+func loadSecurityConfigs(file string) []securitySetting {
+	// Import Configuration
+	files, err := os.Open("configs/" + file) // For read access.
 	if err != nil {
 		log.Fatal(err)
 	}
 	data := make([]byte, 10000)
-	count, err := file.Read(data)
+	count, err := files.Read(data)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//decode json
-	var f []feature
+	var f []securitySetting
 
 	json.Unmarshal(data[0:count], &f)
 
-	// Set the content type to json and send response
-	w.Header().Set("Content-Type", "application/json")
-	setSecurityHeaders(w)
-	json.NewEncoder(w).Encode(f)
-}
+	log.Printf("%+v", f)
 
-func audioHandler(w http.ResponseWriter, req *http.Request) {
-
-	setSecurityHeaders(w)
-
-	//decode the URL Path
-	song := req.URL.Path[len("/getAudio/"):]
-
-	ok := false
-
-	// Import AnalyzedFeaturesList.json
-	file, err := os.Open("configs/AnalyzedFeaturesList.json") // For read access.
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make([]byte, 10000)
-	count, err := file.Read(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//decode json
-	var f []feature
-
-	json.Unmarshal(data[0:count], &f)
-
-	// Check if requested song is analyzed
-	for i := range f {
-		if song == f[i].Name {
-			ok = true
-			break
-		}
-	}
-
-	if ok {
-		//send the requested audio file if existing
-		http.ServeFile(w, req, "audio_files/"+song)
-	} else {
-		//if not send 404 site
-		http.ServeFile(w, req, "website/404.html")
-	}
-
-}
-
-func analyzeYTHandler(w http.ResponseWriter, req *http.Request) {
-
-	// decode incoming request (json)
-	decoder := json.NewDecoder(req.Body)
-	var reg request
-	err := decoder.Decode(&reg)
-	if err != nil {
-		panic(err)
-	}
-
-	log.Printf("incoming request: %+v", reg)
-
-	// create new download task
-	var t task
-
-	for {
-		ftask, err := os.Open("configs/task.json") // For read access.
-		if err != nil {
-			log.Printf(err.Error())
-			if strings.Contains(err.Error(), "no such file or directory") {
-				break
-			} else {
-				panic(err)
-			}
-		}
-		taskdata := make([]byte, 1000)
-		taskcount, err := ftask.Read(taskdata)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		json.Unmarshal(taskdata[0:taskcount], &t)
-		log.Printf("currently in the taskfile: %+v", t)
-
-		if t.Stage == "download" {
-			fmt.Println("A file is being dowloaded trying again in 1 second!")
-			time.Sleep(time.Second)
-		} else {
-			break
-		}
-	}
-
-	t.Stage = "download"
-	t.Url = reg.Url
-	t.Format = reg.Format
-
-	mars, _ := json.Marshal(t)
-	ioutil.WriteFile("configs/task.json", mars, 0644)
-
-	// Run Download
-	log.Printf("starting dowload script")
-	dl := exec.Command("python3", "scripts/Download.py")
-	dl.Stdout = os.Stdout
-	dl.Stderr = os.Stderr
-	_ = dl.Run()
-
-	// Run Categorization
-	log.Printf("starting cateogorization script")
-	ana := exec.Command("python3", "scripts/CategorizeSong.py")
-	ana.Stdout = os.Stdout
-	ana.Stderr = os.Stderr
-	_ = ana.Run()
-
-	// Import NewFeatures.json
-	file, err := os.Open("configs/NewFeatures.json") // For read access.
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make([]byte, 1000)
-	count, err := file.Read(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf(string(data[0:count]))
-
-	//decode json
-	var f []feature
-
-	json.Unmarshal(data[0:count], &f)
-	log.Printf("New Feature: %+v", f[0])
-
-	//prepare response
-	var resp response
-
-	resp.Url = reg.Url
-	resp.Name = f[0].Name
-	resp.Featuregroup = f[0].Featuregroup
-
-	log.Printf("response: %+v", resp)
-
-	//set the header and write the response
-	w.Header().Set("Content-Type", "application/json")
-	setSecurityHeaders(w)
-
-	json.NewEncoder(w).Encode(resp)
-
+	return f
 }
 
 func getCiphers() []uint16 {
@@ -361,10 +151,7 @@ func getCiphers() []uint16 {
 }
 
 func setSecurityHeaders(w http.ResponseWriter) {
-	w.Header().Set("X-Frame-Options", "SAMEORIGIN")
-	w.Header().Set("X-XSS-Protection", "1; mode=block")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Header().Set("Strict-Transport-Security", "max-age=63072000")
-	w.Header().Set("Content-Security-Policy", "default-src 'none'; font-src 'self'; frame-src 'self'; img-src 'self'; script-src 'none'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none';frame-ancestors 'self'")
-	w.Header().Set("Referrer-Policy", "same-origin")
+	for i := range securityHeaders {
+		w.Header().Set(securityHeaders[i].Header, securityHeaders[i].Option)
+	}
 }
