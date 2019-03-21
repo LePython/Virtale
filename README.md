@@ -1,4 +1,4 @@
-# What is "Name of the collaboration project"?
+# What is Virtale?
 Introduction...
  
  For the purpose of simplicity, the model can be also executed on the server. This saves the resources of your personal computer by sending a HTTP request to the server to download and then analyze the song. To receive the result of the analysis, you can also send a request to the server (??? correct me if I'm wrong). The song can then either be additionaly downloaded from the server along with the classified group number or the group number can be received without donwloading the song itself. Additionaly, if the song has already been downloaded once by someone, you can get the analyzed group almost instantly since it is saved on the server.
