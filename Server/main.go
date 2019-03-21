@@ -18,7 +18,8 @@ var securityHeaders []securitySetting
 
 func main() {
 
-	conf := loadServerConfigs()
+	var conf serverConfig
+	paseJSONFile("configs/server.conf", &conf)
 
 	allowedPages = loadConfigs(conf.PageConfig)
 	allowedStyles = loadConfigs(conf.StylesConfig)
@@ -154,4 +155,19 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	for i := range securityHeaders {
 		w.Header().Set(securityHeaders[i].Header, securityHeaders[i].Option)
 	}
+}
+
+func paseJSONFile(file string, i interface{}) {
+	// Import Configuration
+	files, err := os.Open(file) // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := make([]byte, 10000)
+	count, err := files.Read(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	json.Unmarshal(data[0:count], i)
 }

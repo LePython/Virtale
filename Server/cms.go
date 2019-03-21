@@ -1,6 +1,11 @@
 package main
 
-import "net/http"
+import (
+	"io"
+	"log"
+	"net/http"
+	"os"
+)
 
 // all functions necessary for the "normal" webserver are here
 
@@ -13,6 +18,8 @@ func rootHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func pageHandler(w http.ResponseWriter, req *http.Request) {
+
+	log.Printf("new request for:" + req.URL.Path)
 
 	setSecurityHeaders(w)
 
@@ -43,10 +50,14 @@ func pageHandler(w http.ResponseWriter, req *http.Request) {
 
 func styleHandler(w http.ResponseWriter, req *http.Request) {
 
+	log.Printf("new request for:" + req.URL.Path)
+
 	setSecurityHeaders(w)
 
 	//decode URL Path
 	style := req.URL.Path[len("/style/"):]
+
+	log.Printf("requested style:" + style)
 
 	ok := false
 
@@ -62,8 +73,18 @@ func styleHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if ok {
+		w.Header().Set("Content-Type", "text/css; charset=utf-8")
 		//if it is serve it
-		http.ServeFile(w, req, "website/stlye/"+style+".css")
+		//log.Printf("now serving:website/styles/" + style + ".css")
+
+		w.WriteHeader(http.StatusOK)
+
+		res, _ := os.Open("website/styles/" + style + ".css")
+		dat := make([]byte, 10000)
+		count, _ := res.Read(dat)
+		//log.Printf("Containing:" + string(dat[0:count]))
+
+		io.WriteString(w, string(dat[0:count]))
 	} else {
 		//if not redirect to 404
 		http.Redirect(w, req, "/style/404", http.StatusSeeOther)
@@ -71,6 +92,8 @@ func styleHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func scriptHandler(w http.ResponseWriter, req *http.Request) {
+
+	log.Printf("new request for:" + req.URL.Path)
 
 	setSecurityHeaders(w)
 
@@ -92,7 +115,7 @@ func scriptHandler(w http.ResponseWriter, req *http.Request) {
 
 	if ok {
 		//if it is serve it
-		http.ServeFile(w, req, "website/script/"+script+".js")
+		http.ServeFile(w, req, "website/scripts/"+script+".js")
 	} else {
 		//if not redirect to 404
 		http.Redirect(w, req, "/script/404", http.StatusSeeOther)
