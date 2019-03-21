@@ -11,12 +11,18 @@ import json
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+allowedAudioFileExtensions = ["*.mp3", "*.wav"]
 
 # Currently existings songs in the songs folder
 existingSongsNames = []
 
+# New list to store songs
+songsList = []
+
 # Get all wav files from that folder and store them in a list
-songsList = glob.glob(os.path.normpath(dir_path + "/../audio_files/*.wav"))
+for fileExt in allowedAudioFileExtensions:
+    songsList.extend(glob.glob(os.path.normpath(dir_path + "/../audio_files/" + fileExt)))
+
 for i in songsList:
     existingSongsNames.append(os.path.basename(i))
 
@@ -48,7 +54,7 @@ print("This might take a while. It depends on how many songs have to be analyzed
 analyzedFeatureList = []
 
 # Extracting features from each an audio file in the list
-for index, f in enumerate(tqdm(songsList)):
+for index, f in enumerate(songsList):
     # audio file name
     audioName = os.path.basename(f)
 
