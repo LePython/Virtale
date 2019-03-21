@@ -5,7 +5,6 @@ import pandas as pd
 import scipy
 import librosa
 import glob
-from tqdm import tqdm
 import json
 
 
@@ -42,6 +41,13 @@ def IsAnalysisRequired():
         if not obj in analyzedDataListNames:
             return True
 
+songsToBeAnalyzedCount = 0
+
+for obj in existingSongsNames:
+    if not obj in analyzedDataListNames:
+        songsToBeAnalyzedCount += 1  
+
+
 # Check if there are files for analysis
 # if there are none, exit the script
 if IsAnalysisRequired() != True:
@@ -50,6 +56,7 @@ if IsAnalysisRequired() != True:
 
 print("Analysis is required. Initiating analysis...")
 print("This might take a while. It depends on how many songs have to be analyzed. Be Patient.")
+
 # Create a list to store analyzed features afterwards
 analyzedFeatureList = []
 
@@ -60,6 +67,8 @@ for index, f in enumerate(songsList):
 
     if audioName in analyzedDataListNames:
         continue
+
+    print(str(index+1) + "/" + str(songsToBeAnalyzedCount) + ": " + audioName + "   --- Song is being analyzed... ")
 
     try:
         # Read wav-file
@@ -82,6 +91,8 @@ for index, f in enumerate(songsList):
 
 
         feature_list[1:] = np.round(feature_list[1:], decimals=3)
+
+        print("Done analyzing " + audioName)
 
     except:
         pass
