@@ -114,8 +114,16 @@ func scriptHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if ok {
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 		//if it is serve it
-		http.ServeFile(w, req, "website/scripts/"+script+".js")
+
+		w.WriteHeader(http.StatusOK)
+
+		res, _ := os.Open("website/scripts/" + script + ".js")
+		dat := make([]byte, 10000)
+		count, _ := res.Read(dat)
+
+		io.WriteString(w, string(dat[0:count]))
 	} else {
 		//if not redirect to 404
 		http.Redirect(w, req, "/script/404", http.StatusSeeOther)
