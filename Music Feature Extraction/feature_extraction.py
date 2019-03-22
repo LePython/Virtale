@@ -6,18 +6,18 @@ import librosa
 from tqdm import tqdm
 
 
-WAV_DIR = 'audio_files/'
-wav_files = os.listdir(WAV_DIR)
+audioDir = 'audio_files/'
+wav_files = os.listdir(audioDir)
 
 col_names = ['file_name', 'tempo', 'spectral_contrast_1_mean', 'spectral_contrast_2_mean', 'spectral_contrast_3_mean', 'mfccs_4_mean', 'mfccs_1_std', 'mfccs_5_std']
-            
-            
+ 
+
 df = pd.DataFrame(columns=col_names)
 
 for f in tqdm(wav_files):
     try:
         # Read wav-file
-        y, sr = librosa.load(WAV_DIR+f, sr = 22050)
+        y, sr = librosa.load(audioDir+f, sr = 22050)
         
         feature_list = [f]
 

@@ -16,7 +16,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 existingSongsNames = []
 
 # Get all wav files from that folder and store them in a list
-songsList = glob.glob(os.path.normpath(dir_path + "/../audio_files/*.wav"))
+songsList = glob.glob(os.path.normpath(dir_path + "/../audio_files/*.mp3"))
 for i in songsList:
     existingSongsNames.append(os.path.basename(i))
 
@@ -47,8 +47,8 @@ print("This might take a while. It depends on how many songs have to be analyzed
 # Create a list to store analyzed features afterwards
 analyzedFeatureList = []
 
-# Extracting features from each an audio file in the list
-for index, f in enumerate(tqdm(songsList)):
+# Extracting features from each audio file in the list
+for index, f in enumerate(songsList):
     # audio file name
     audioName = os.path.basename(f)
 
@@ -76,6 +76,8 @@ for index, f in enumerate(tqdm(songsList)):
 
 
         feature_list[1:] = np.round(feature_list[1:], decimals=3)
+
+        print(index + "Song" + feature_list[0] + " was analyzed succesfully.")
 
     except:
         pass

@@ -19,8 +19,9 @@ public class HandOutsideCameraView : MonoBehaviour
     }
     private IEnumerator ObjectActiveStateObservation()
     {
-        if(objectToObserveForChanges.activeSelf == true)
+        while(objectToObserveForChanges.activeSelf == true)
         {
+            Debug.Log("check");
             yield return new WaitForSeconds(0.2f);
         }
 

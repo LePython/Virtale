@@ -55,5 +55,5 @@
     },
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.pythonPath": "/usr/bin/python3"
+    "python.pythonPath": "C:\\Users\\me\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"
 }
