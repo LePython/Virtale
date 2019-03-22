@@ -21,7 +21,6 @@ public class HandOutsideCameraView : MonoBehaviour
     {
         while(objectToObserveForChanges.activeSelf == true)
         {
-            Debug.Log("check");
             yield return new WaitForSeconds(0.2f);
         }
 
