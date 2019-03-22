@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -26,6 +27,23 @@ func pageHandler(w http.ResponseWriter, req *http.Request) {
 	//decode URL Path
 	page := req.URL.Path[len("/page/"):]
 
+	var api apikey
+	keyExists := false
+
+	if req.Header.Get("Content-Type") != "" {
+		//decoe apikey
+		decoder := json.NewDecoder(req.Body)
+
+		err := decoder.Decode(&api)
+		if err != nil {
+			keyExists = false
+		} else {
+			keyExists = true
+		}
+
+		log.Printf("with apikey: %+v", api)
+	}
+
 	ok := false
 
 	//Check if requested page is allowed
@@ -34,7 +52,20 @@ func pageHandler(w http.ResponseWriter, req *http.Request) {
 			ok = true
 			break
 		} else if page == allowedPages[i].Name && allowedPages[i].Allowed == "n" {
-			ok = false
+
+			keyok := false
+
+			if keyExists {
+				//Check if sent apikey is valid
+				for j := range keys {
+					if keys[j].Key == api.Key {
+						keyok = true
+						break
+					}
+				}
+			}
+
+			ok = keyok
 			break
 		}
 	}
@@ -54,6 +85,23 @@ func styleHandler(w http.ResponseWriter, req *http.Request) {
 
 	setSecurityHeaders(w)
 
+	var api apikey
+	keyExists := false
+
+	if req.Header.Get("Content-Type") != "" {
+		//decoe apikey
+		decoder := json.NewDecoder(req.Body)
+
+		err := decoder.Decode(&api)
+		if err != nil {
+			keyExists = false
+		} else {
+			keyExists = true
+		}
+
+		log.Printf("with apikey: %+v", api)
+	}
+
 	//decode URL Path
 	style := req.URL.Path[len("/style/"):]
 
@@ -67,7 +115,20 @@ func styleHandler(w http.ResponseWriter, req *http.Request) {
 			ok = true
 			break
 		} else if style == allowedStyles[i].Name && allowedStyles[i].Allowed == "n" {
-			ok = false
+
+			keyok := false
+
+			if keyExists {
+				//Check if sent apikey is valid
+				for j := range keys {
+					if keys[j].Key == api.Key {
+						keyok = true
+						break
+					}
+				}
+			}
+
+			ok = keyok
 			break
 		}
 	}
@@ -97,6 +158,23 @@ func scriptHandler(w http.ResponseWriter, req *http.Request) {
 
 	setSecurityHeaders(w)
 
+	var api apikey
+	keyExists := false
+
+	if req.Header.Get("Content-Type") != "" {
+		//decoe apikey
+		decoder := json.NewDecoder(req.Body)
+
+		err := decoder.Decode(&api)
+		if err != nil {
+			keyExists = false
+		} else {
+			keyExists = true
+		}
+
+		log.Printf("with apikey: %+v", api)
+	}
+
 	//decode URL Path
 	script := req.URL.Path[len("/script/"):]
 
@@ -108,7 +186,19 @@ func scriptHandler(w http.ResponseWriter, req *http.Request) {
 			ok = true
 			break
 		} else if script == allowedScripts[i].Name && allowedScripts[i].Allowed == "n" {
-			ok = false
+			keyok := false
+
+			if keyExists {
+				//Check if sent apikey is valid
+				for j := range keys {
+					if keys[j].Key == api.Key {
+						keyok = true
+						break
+					}
+				}
+			}
+
+			ok = keyok
 			break
 		}
 	}

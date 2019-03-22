@@ -16,6 +16,7 @@ var allowedStyles []contentSetting
 var allowedScripts []contentSetting
 
 var securityHeaders []securitySetting
+var keys []apikey
 
 func main() {
 
@@ -27,6 +28,7 @@ func main() {
 	parseJSONFile("configs/"+conf.ScriptsConfig, &allowedScripts)
 
 	parseJSONFile("configs/"+conf.SecurityConfig, &securityHeaders)
+	parseJSONFile("configs/"+conf.ApiKeyConfig, &keys)
 
 	mux := http.NewServeMux()
 
@@ -76,19 +78,68 @@ func main() {
 
 func scriptReloadHandler(w http.ResponseWriter, req *http.Request) {
 
-	var conf serverConfig
-	parseJSONFile("configs/server.conf", &conf)
+	var api apikey
+	keyExists := false
 
-	parseJSONFile("configs/"+conf.PageConfig, &allowedPages)
-	parseJSONFile("configs/"+conf.StylesConfig, &allowedStyles)
-	parseJSONFile("configs/"+conf.ScriptsConfig, &allowedScripts)
+	if req.Header.Get("Content-Type") != "" {
+		//decoe apikey
+		decoder := json.NewDecoder(req.Body)
 
-	parseJSONFile("configs/"+conf.SecurityConfig, &securityHeaders)
+		err := decoder.Decode(&api)
+		if err != nil {
+			keyExists = false
+		} else {
+			keyExists = true
+		}
 
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusOK)
+		log.Printf("with apikey: %+v", api)
+	}
+	if keyExists {
+		keyok := false
 
-	io.WriteString(w, "Sucessfully reloaded configurations!\nTo reload the certificates and the port restart the server.")
+		for i := range keys {
+			if keys[i].Key == api.Key {
+				keyok = true
+				break
+			}
+		}
+
+		if keyok {
+			var conf serverConfig
+			parseJSONFile("configs/server.conf", &conf)
+
+			parseJSONFile("configs/"+conf.PageConfig, &allowedPages)
+			parseJSONFile("configs/"+conf.StylesConfig, &allowedStyles)
+			parseJSONFile("configs/"+conf.ScriptsConfig, &allowedScripts)
+
+			parseJSONFile("configs/"+conf.SecurityConfig, &securityHeaders)
+
+			w.Header().Set("Content-Type", "text/plain")
+			setSecurityHeaders(w)
+			w.WriteHeader(http.StatusOK)
+
+			io.WriteString(w, "Sucessfully reloaded configurations!\nTo reload the certificates and the port restart the server.")
+
+		} else {
+			//set the header and write the response
+			w.Header().Set("Content-Type", "application/json")
+			setSecurityHeaders(w)
+
+			w.WriteHeader(http.StatusOK)
+
+			io.WriteString(w, "{\"info\":\"Not a valid apiKey\"}")
+		}
+
+	} else {
+		//set the header and write the response
+		w.Header().Set("Content-Type", "application/json")
+		setSecurityHeaders(w)
+
+		w.WriteHeader(http.StatusOK)
+
+		io.WriteString(w, "{\"info\":\"Not a apiKey given\"}")
+	}
+
 }
 func getCiphers() []uint16 {
 	return []uint16{
@@ -123,6 +174,8 @@ func parseJSONFile(file string, i interface{}) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Printf(string(data[0:count]))
 
 	json.Unmarshal(data[0:count], i)
 }

@@ -11,6 +11,11 @@ type serverConfig struct {
 	StylesConfig   string `json:"stylesConfig"`
 	ScriptsConfig  string `json:"scriptsConfig"`
 	SecurityConfig string `json:"securityConfig"`
+	ApiKeyConfig   string `json:"apiKeyConfig"`
+}
+
+type apikey struct {
+	Key string `json:"key"`
 }
 
 type contentSetting struct {
@@ -30,6 +35,7 @@ type audioRequest struct {
 type request struct {
 	Url    string `json:"url"`
 	Format string `json:"format"`
+	Key    string `json:"key"`
 }
 
 type task struct {
