@@ -16,8 +16,6 @@ namespace UnityEngine.AudioManager
         public enum PlaybackState { Play, Pause };
 
         #region Events
-
-        public UnityEvent OnEnableEvent;
         public UnityEvent OnPlaybackStateChanged;
 
         public UnityEvent OnSongEnd;
@@ -36,7 +34,7 @@ namespace UnityEngine.AudioManager
 
         #region Public Variables
 
-        public static PlaybackState musicPlaybackState = PlaybackState.Play;
+        public static PlaybackState musicPlaybackState = PlaybackState.Pause;
 
         #endregion
 
@@ -114,10 +112,6 @@ namespace UnityEngine.AudioManager
 
         #region Unity Methods
 
-        private void OnEnable() 
-        {
-            OnEnableEvent.Invoke();
-        }
         void Awake()
         {
             Instance = this;
@@ -132,7 +126,7 @@ namespace UnityEngine.AudioManager
         void Start()
         {
             audioHandler = GetComponent<AudioHandler>();
-            SelectSong(songNumber);
+            Instance.SelectSong(songNumber);
         }
 
         #endregion
