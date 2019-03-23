@@ -10,13 +10,14 @@ namespace UnityEngine.AudioManager
     internal class AudioPlaybackManager : MonoBehaviour, IMusicPlayer
     {
 
-        public AudioPlaybackManager Instance;
+        private AudioPlaybackManager Instance;
 
         // Playback states enumerator
         public enum PlaybackState { Play, Pause };
 
         #region Events
 
+        public UnityEvent OnEnableEvent;
         public UnityEvent OnPlaybackStateChanged;
 
         public UnityEvent OnSongEnd;
@@ -113,6 +114,10 @@ namespace UnityEngine.AudioManager
 
         #region Unity Methods
 
+        private void OnEnable() 
+        {
+            OnEnableEvent.Invoke();
+        }
         void Awake()
         {
             Instance = this;
@@ -162,6 +167,9 @@ namespace UnityEngine.AudioManager
             {
                 Instance.SelectSong(++songNumber);
                 OnPlaybackStateChanged.Invoke();
+            }else
+            {
+                
             }
         }
         public void LastSong()
