@@ -5,8 +5,7 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 Assets/StreamingAssets/Tutorial/*
-Assets/StreamingAssets/AudioFiles/*
-Music Feature Extraction/audio_files/*
+Assets/StreamingAssets/audio_files/*
 Server/audio_files/*
 Server/configs/task.json
 

@@ -29,6 +29,8 @@ namespace UnityEngine.AudioManager
 
         [SerializeField]
         private List<Song> songPlaylist = new List<Song>();
+
+        private string[] audioExtensions = {".mp3",".wav"};
         #endregion
 
         #region Properties
@@ -40,7 +42,7 @@ namespace UnityEngine.AudioManager
         private void Awake() {
             if(audioPlaylistPath != null)
             {
-                CreateListFromPath(audioPlaylistPath);
+                CreateListFromPath(audioPlaylistPath, audioExtensions);
             }
         }
 
@@ -54,29 +56,23 @@ namespace UnityEngine.AudioManager
         /// the initialized list.
         /// </summary>
         /// <param name="folder"> Give only the name of the folder. No slashes </param>
-        public void CreateListFromPath(string folder)
+        public void CreateListFromPath(string folder, string[] fileExtensions)
         {
             if(songPlaylist.Count > 0)
                 Debug.LogWarning("You are creating a list on top of another list. If this was not your intention, you should remove list path in your inspector window");
 
-            string audioPath = Application.streamingAssetsPath + "/"+ folder;
-            DirectoryInfo directoryInfo = new DirectoryInfo(audioPath);
+            DirectoryInfo audioPath = new DirectoryInfo(Application.streamingAssetsPath + "/"+ folder);
+
+
+            IEnumerable<FileInfo> audioFiles = AudioFileGetter.GetFilesByExtensions(audioPath, fileExtensions);
 
 #if UNITY_EDITOR
             Debug.Log("Streaming Assets Path:" + audioPath);
+            //Debug.Log(audioFiles.Length + " files will be loaded into the list.");
 #endif
-
-            FileInfo[] allFiles = directoryInfo.GetFiles("*.wav", SearchOption.AllDirectories);
-
-#if UNITY_EDITOR
-            Debug.Log(allFiles.Length + " files will be loaded into the list.");
-#endif
-            foreach(FileInfo file in allFiles)
+            foreach(FileInfo file in audioFiles)
             {
-                if (file.Extension == ".wav")
-                {
-                    songPlaylist.Add(new Song(Path.GetFileNameWithoutExtension(file.Name), "file://" + file.FullName));
-                }
+                songPlaylist.Add(new Song(Path.GetFileNameWithoutExtension(file.Name), "file://" + file.FullName));
             }
         }
         #endregion
