@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 namespace UnityEngine.AudioManager
@@ -157,13 +158,14 @@ namespace UnityEngine.AudioManager
         }
         public void NextSong()
         {
-            if(SongNumber<musicList.SongPlaylist.Count)
+            if(SongNumber<musicList.SongPlaylist.Count-1)
             {
                 Instance.SelectSong(++songNumber);
                 OnPlaybackStateChanged.Invoke();
-            }else
+            }
+            else
             {
-                
+                SceneManager.LoadScene(0);
             }
         }
         public void LastSong()
