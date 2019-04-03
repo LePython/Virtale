@@ -21,7 +21,7 @@ public class HandOutsideCameraView : MonoBehaviour
     {
         while(objectToObserveForChanges.activeSelf == true)
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
         }
 
         WhenObjectDisabled.Invoke();

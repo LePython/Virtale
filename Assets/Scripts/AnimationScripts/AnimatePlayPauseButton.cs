@@ -17,11 +17,11 @@ public class AnimatePlayPauseButton : MonoBehaviour
     {
         if(AudioPlaybackManager.musicPlaybackState == AudioPlaybackManager.PlaybackState.Play)
         {
-            playbackButtonAnimator.SetBool("IsPlaying", true);
+            playbackButtonAnimator?.SetBool("IsPlaying", true);
         }
         else
         {
-            playbackButtonAnimator.SetBool("IsPlaying", false);
+            playbackButtonAnimator?.SetBool("IsPlaying", false);
         }
     }
 }

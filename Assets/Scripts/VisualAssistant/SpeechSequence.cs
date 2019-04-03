@@ -64,7 +64,7 @@ public class SpeechSequence : MonoBehaviour
         StartCoroutine("WaitForTransitionToApp");
         transcriptList = new List<Transcript>();
         transcriptList.Add(new Transcript("Vassist/transcript_1.wav", "Willkommen in VirtaleVR", 2.0f));
-        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen, strecken Sie Ihre linke Hand vor Ihrem Gesicht aus", 3.0f));
+        transcriptList.Add(new Transcript("Vassist/transcript_2.wav", "Um anzufangen, strecken Sie Ihre linke Hand vor Ihrem Gesicht aus", 2.0f));
         transcriptList.Add(new Transcript("Vassist/transcript_3.wav", "Um ein Lied abzuspielen, drücken sie im Wiedergabefenster auf den Wiedergabeknopf", 3.0f));
         audioHandler.StreamAudio(transcriptList[transcriptListIndex].transcriptPath);
         transcriptText.text = transcriptList[transcriptListIndex].transcriptText;

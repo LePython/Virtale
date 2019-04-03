@@ -51,6 +51,7 @@ namespace UnityEngine.AudioManager
         private void Start()
         {
             //StreamAudio("Tutorial/Tony Anderson - Immanuel.wav");
+            StreamHTTPAudio("https://virtalevr.federalchat.eu/getAudio/Royalty Free Music - Electronic Fantasy.wav");
         }
         #endregion
 
@@ -99,6 +100,15 @@ namespace UnityEngine.AudioManager
         {
             StartCoroutine(LoadAudio("file://" + Application.streamingAssetsPath + "/" + path));
         }
+        /// <summary>
+        /// Stream audio from the given website url.
+        /// </summary>
+        /// <param name="url"></param>
+        public void StreamHTTPAudio(string url)
+        {
+            StartCoroutine(LoadAudio(url));
+        }
+        
         private IEnumerator LoadAudio(string audioFilePath)
         {
             AudioToPlay = null;
