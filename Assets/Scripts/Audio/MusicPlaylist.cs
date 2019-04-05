@@ -2,10 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.AudioManager;
-using Newtonsoft.Json;
 
 namespace UnityEngine.AudioManager
 {
@@ -32,10 +29,6 @@ namespace UnityEngine.AudioManager
 
         [SerializeField]
         private List<Song> songPlaylist = new List<Song>();
-
-        private string[] audioExtensions = {".mp3",".wav"};
-
-        private ServerHandler srvHandler;
         #endregion
 
         #region Properties
@@ -44,27 +37,13 @@ namespace UnityEngine.AudioManager
 
         #region Unity Methods
 
-        private void Awake() 
-        {
-            srvHandler = gameObject.AddComponent<ServerHandler>();
+        private void Awake() {
             if(audioPlaylistPath != null)
             {
-                CreateListFromPath(audioPlaylistPath, audioExtensions);
+                CreateListFromPath(audioPlaylistPath);
             }
         }
 
-        private void Start() 
-        {
-            ServerHandler.AudioAnalyze aud = new ServerHandler.AudioAnalyze{url = "https://www.youtube.com/watch?v=LYmkWqI0RLg", format = "wav", key = "M2qetha1abruFeb@itIsastuy1weprIpr9k545goprl@5kiVaCRez4ThAQL5pa4p"};
-            string json = JsonConvert.SerializeObject(aud);
-
-            // Set the delegate to the function I want to call after the GET request has ended
-            srvHandler.OnRequestEnd += srvHandler.GetAudioList;
-            srvHandler.OnRequestEnd += UpdateMusicList;
-
-            StartCoroutine(srvHandler.GetRequest("https://virtalevr.federalchat.eu/getSongList", srvHandler.OnRequestEnd));
-
-        }
         #endregion
 
         #region Public Methods
@@ -75,53 +54,32 @@ namespace UnityEngine.AudioManager
         /// the initialized list.
         /// </summary>
         /// <param name="folder"> Give only the name of the folder. No slashes </param>
-        public void CreateListFromPath(string folder, string[] fileExtensions)
+        public void CreateListFromPath(string folder)
         {
             if(songPlaylist.Count > 0)
                 Debug.LogWarning("You are creating a list on top of another list. If this was not your intention, you should remove list path in your inspector window");
 
-            DirectoryInfo audioPath = new DirectoryInfo(Application.streamingAssetsPath + "/"+ folder);
-
-
-            IEnumerable<FileInfo> audioFiles = AudioFileGetter.GetFilesByExtensions(audioPath, fileExtensions);
+            string audioPath = Application.streamingAssetsPath + "/"+ folder;
+            DirectoryInfo directoryInfo = new DirectoryInfo(audioPath);
 
 #if UNITY_EDITOR
             Debug.Log("Streaming Assets Path:" + audioPath);
-            //Debug.Log(audioFiles.Length + " files will be loaded into the list.");
 #endif
-            foreach(FileInfo file in audioFiles)
-            {
-                songPlaylist.Add(new Song(Path.GetFileNameWithoutExtension(file.Name), "file://" + file.FullName));
-            }
-        }
 
-        /// <summary>
-        /// Automatically waits until the requested list is loaded in ServerHandler.
-        /// </summary>
-        /// <param name="jsonFileList"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public void CreateMusicListFromJSON<T>(List<T> jsonFileList)
-        {
-            FieldInfo[] fields = typeof(T).GetFields();
-            foreach(FieldInfo field in fields)
+            FileInfo[] allFiles = directoryInfo.GetFiles("*.wav", SearchOption.AllDirectories);
+
+#if UNITY_EDITOR
+            Debug.Log(allFiles.Length + " files will be loaded into the list.");
+#endif
+            foreach(FileInfo file in allFiles)
             {
-                if(field.Name == "name")
+                if (file.Extension == ".wav")
                 {
-                    Debug.Log(field.Name);
+                    songPlaylist.Add(new Song(Path.GetFileNameWithoutExtension(file.Name), "file://" + file.FullName));
                 }
             }
-            //songPlaylist = srvHandler.RequestedAudioList;
-        }
-
-        /// <summary>
-        /// Function to attach to the OnRequestEnd delegate in ServerHandler.
-        /// </summary>
-        private void UpdateMusicList()
-        {
-            CreateMusicListFromJSON<ServerHandler.AudioData>(srvHandler.RequestedAudioList);
         }
         #endregion
-        
+
     }
 }

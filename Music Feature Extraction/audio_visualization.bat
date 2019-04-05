@@ -1,2 +1,0 @@
-py AudioVisualization.py
-pause
