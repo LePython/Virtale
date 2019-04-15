@@ -1,4 +1,4 @@
-# What is Virtale?
+# What is Virtale? [![Gitter](https://badges.gitter.im/Virtale-Project/VR.svg)](https://gitter.im/Virtale-Project/VR?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 Virtale is a project made by two collaborators @noah5110 and @LePython. It is meant to enable easy implementation of the Machine Learning models that have already been trained beforehand. The models can therefore be executed on the server (locally or on the Web server, look at the server folder). This saves the resources of your personal computer. By sending HTTP requests you can either ask to analyze new songs, or get the analyzed songs list as a JSON output.
 
 To show a practical use case for this, Unity was used to visualize each group of the songs specifically and differently. You can experiment with program and its scripts yourself. There are communication to the server, spectrum visualizers, particle system visualizers, audio playback managers and audio streaming already implemented to this program and everything inside of it is free to use commercially and privately! 
